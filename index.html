@@ -1,0 +1,2641 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portafolio</title>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <link rel="icon" type="image/png" href="./icon-192.png">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Inversiones">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .icon-btn {
+            width: 2.75rem;
+            height: 2.75rem;
+            padding: 0;
+            border-radius: 9999px;
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header h1 {
+            font-size: 2.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .header p {
+            color: #94a3b8;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary {
+            background: #334155;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .tabs .tab {
+            flex: 1;
+            text-align: center;
+        }
+
+        .tab {
+            background: transparent;
+            border: none;
+            border-radius: 0.5rem 0.5rem 0 0;
+            padding: 0.75rem 0.5rem;
+            color: #94a3b8;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .tab:hover {
+            background: #1e293b;
+            color: #fff;
+        }
+
+        .tab.active {
+            color: #10b981;
+            border-bottom: 2px solid #10b981;
+            background: transparent;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-box p {
+            color: #d1fae5;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-box .amount {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .stat-box.blue {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+
+        .stat-box.blue p {
+            color: #dbeafe;
+        }
+
+        .stat-box.purple {
+            background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
+        }
+
+        .stat-box.purple p {
+            color: #f3e8ff;
+        }
+
+        .stat-box.slate {
+            background: linear-gradient(135deg, #64748b 0%, #334155 100%);
+        }
+
+        .stat-box.slate p {
+            color: #e2e8f0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .mini-stat {
+            background: #334155;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .mini-stat.compact {
+            padding: 0.6rem 0.5rem;
+        }
+
+        .mini-stat.compact p {
+            font-size: 0.68rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .mini-stat.compact .value {
+            font-size: 0.85rem;
+        }
+
+        .grid-compact {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.6rem;
+        }
+
+        .mini-stat p {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .mini-stat .value {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .update-section {
+            margin-bottom: 2rem;
+        }
+
+        .update-section h3 {
+            font-size: 1.125rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .update-section .hint {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        label.field-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        input, select {
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            color: #fff;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        input::placeholder {
+            color: #94a3b8;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+        }
+
+        .item-list {
+            max-height: 480px;
+            overflow-y: auto;
+        }
+
+        .item-row {
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .item-name {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .item-meta {
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        .badge {
+            background: #064e3b;
+            color: #86efac;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .badge.warning {
+            background: #451a03;
+            color: #fdba74;
+        }
+
+        .badge.danger {
+            background: #450a0a;
+            color: #fca5a5;
+        }
+
+        .badge.muted {
+            background: #1e293b;
+            color: #94a3b8;
+        }
+
+        .item-data {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .item-data-item p {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .item-data-item .value {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .progress-wrap {
+            margin-top: 0.25rem;
+        }
+
+        .progress-wrap .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-bottom: 0.4rem;
+        }
+
+        .progress-track {
+            background: #1e293b;
+            border-radius: 9999px;
+            height: 0.6rem;
+            overflow: hidden;
+            border: 1px solid #475569;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 9999px;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+            transition: width 0.3s ease;
+        }
+
+        .progress-fill.warning {
+            background: linear-gradient(90deg, #f97316, #f59e0b);
+        }
+
+        .progress-fill.danger {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+
+        /* ---- Registrar Gasto: estilo minimalista tipo Apple ---- */
+        .expense-card {
+            background: linear-gradient(160deg, #1e293b 0%, #172033 100%);
+            border: 1px solid #334155;
+            border-radius: 1.25rem;
+            padding: 2rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .amount-input-wrap {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 0.25rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .amount-input-wrap .currency-symbol {
+            font-size: 1.75rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .amount-input {
+            background: transparent !important;
+            border: none !important;
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 700;
+            width: auto;
+            max-width: 260px;
+            padding: 0 !important;
+            color: #fff;
+            -moz-appearance: textfield;
+        }
+
+        .amount-input::-webkit-outer-spin-button,
+        .amount-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .amount-input:focus {
+            box-shadow: none !important;
+        }
+
+        .desc-input {
+            background: #0f172a !important;
+            border: none !important;
+            border-radius: 0.75rem !important;
+            text-align: center;
+            font-size: 1rem;
+            padding: 0.85rem !important;
+            margin-bottom: 1.25rem;
+        }
+
+        .pill-row {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.25rem;
+            margin-bottom: 1rem;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .pill {
+            flex-shrink: 0;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 9999px;
+            padding: 0.55rem 1.1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .pill:hover {
+            border-color: #475569;
+        }
+
+        .pill.active {
+            background: #10b981;
+            border-color: #10b981;
+            color: #fff;
+        }
+
+        .pill.active.tarjeta-active {
+            background: #f97316;
+            border-color: #f97316;
+        }
+
+        .expense-footer-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .date-chip {
+            background: #0f172a !important;
+            border: 1px solid #334155 !important;
+            border-radius: 0.75rem !important;
+            padding: 0.65rem 1rem !important;
+            font-size: 0.85rem !important;
+            width: auto !important;
+            color: #94a3b8 !important;
+            flex-grow: 1;
+        }
+
+        .fab-add {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 9999px;
+            font-size: 2rem;
+            line-height: 1;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+            flex-shrink: 0;
+        }
+
+        .expense-hint-tarjeta {
+            text-align: center;
+            margin-top: 0.75rem;
+        }
+
+        .smart-move-box {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px dashed #10b981;
+            border-radius: 0.75rem;
+            padding: 0.85rem 1rem;
+            margin-top: 0.75rem;
+        }
+
+        .smart-move-box .smart-move-title {
+            font-size: 0.75rem;
+            color: #6ee7b7;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .smart-move-box .smart-move-amount {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .smart-move-box .smart-move-detail {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 0.25rem;
+        }
+
+        .value.primary { color: #10b981; }
+        .value.blue { color: #3b82f6; }
+        .value.orange { color: #f97316; }
+        .value.purple { color: #a855f7; }
+
+        button {
+            background: #10b981;
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #059669;
+        }
+
+        button.danger {
+            background: #ef4444;
+        }
+
+        button.danger:hover {
+            background: #dc2626;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+        }
+
+        .section-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #10b981;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            z-index: 2000;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        const PLATAFORMAS = ['Rappi', 'Banco de Bogotá'];
+        const CASHBACK_TARJETAS = { 'Rappi': 1, 'Banco de Bogotá': 5 };
+        const PLATAFORMAS_CDT = ['Lulo Bank', 'Santander', 'Banco de Bogotá', 'Pibank', 'Itaú', 'Otro'];
+        const BANCOS = ['Banco de Bogotá', 'Santander', 'Scotiabank', 'BBVA', 'Itaú', 'Banco Occidente', 'Bancolombia', 'Davivienda', 'Colpatria', 'Falabella', 'Finterra', 'Nequi', 'Otro'];
+        const DIAS_GRACIA_DEFAULT = 12;
+        const UMBRAL_SMMLV = 7800000; // referencia para no superar el tope y evitar GMF/retención
+        const CATEGORIAS_GASTOS = ['Mercado', 'Transporte', 'Ocio', 'Servicios', 'Salidas Familia', 'Hogar', 'Comida', 'Regalos', 'Otros'];
+
+        function App() {
+            const [cdts, setCdts] = useState(() => {
+                const saved = localStorage.getItem('cdts');
+                return saved ? JSON.parse(saved) : [];
+            });
+
+            const [cuentas, setCuentas] = useState(() => {
+                const saved = localStorage.getItem('cuentas');
+                return saved ? JSON.parse(saved) : [];
+            });
+
+            const [fondos, setFondos] = useState(() => {
+                const saved = localStorage.getItem('fondos');
+                if (saved) return JSON.parse(saved);
+                // migración desde versión anterior (fpvPension)
+                const legacy = localStorage.getItem('fpvPension');
+                if (legacy) {
+                    const l = JSON.parse(legacy);
+                    return { fpv: l.fpv || 0, pensionObligatoria: l.pension || 0, cesantias: l.cesantias || 0 };
+                }
+                return { fpv: 0, pensionObligatoria: 0, cesantias: 0 };
+            });
+
+            const [fondosFecha, setFondosFecha] = useState(() => localStorage.getItem('fondosFecha') || '');
+
+            const [deudas, setDeudas] = useState(() => {
+                const saved = localStorage.getItem('deudasTC');
+                return saved ? JSON.parse(saved) : [];
+            });
+
+            const [otrosActivos, setOtrosActivos] = useState(() => {
+                const saved = localStorage.getItem('otrosActivos');
+                return saved ? JSON.parse(saved) : [];
+            });
+
+            const [historial, setHistorial] = useState(() => {
+                const saved = localStorage.getItem('historialRendimiento');
+                let data = saved ? JSON.parse(saved) : [];
+                // Eliminar registro del 31/08/2026
+                data = data.filter(h => h.fecha !== '2026-08-31');
+                return data;
+            });
+
+            const [historialMensual, setHistorialMensual] = useState(() => {
+                const saved = localStorage.getItem('historialMensual');
+                return saved ? JSON.parse(saved) : [];
+            });
+
+            const [gastos, setGastos] = useState(() => {
+                const saved = localStorage.getItem('gastosDiarios');
+                if (saved) {
+                    return JSON.parse(saved);
+                }
+                
+                // Gastos de Septiembre 2026 extraídos del Gmail
+                return [
+                    // COMPRAS RAPPICARD - CONSUMO
+                    { id: 'gasto_1', descripcion: 'MercadoLibre - Compra en línea', monto: 323193, fecha: '2026-09-08', metodo: 'tarjeta', tarjeta: 'Rappi', categoria: 'Mercado', aplicaCashback: false },
+                    { id: 'gasto_2', descripcion: 'Kabuki Cocina Nikkei - Restaurante', monto: 106196.77, fecha: '2026-09-04', metodo: 'tarjeta', tarjeta: 'Rappi', categoria: 'Ocio', aplicaCashback: false },
+                    { id: 'gasto_3', descripcion: 'Comercial Daycor', monto: 128600, fecha: '2026-09-04', metodo: 'tarjeta', tarjeta: 'Rappi', categoria: 'Mercado', aplicaCashback: false },
+                    { id: 'gasto_4', descripcion: 'EQ Servicios Integrales', monto: 70000, fecha: '2026-09-05', metodo: 'tarjeta', tarjeta: 'Rappi', categoria: 'Servicios', aplicaCashback: false },
+                    
+                    // TRANSFERENCIAS BRE-B (Metodo: cuenta)
+                    { id: 'gasto_5', descripcion: 'Transferencia Bre-B: JOHN HERNANDEZ', monto: 240000, fecha: '2026-09-07', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Transporte', aplicaCashback: false },
+                    { id: 'gasto_6', descripcion: 'Transferencia Bre-B: FREDY VALVERDE', monto: 200000, fecha: '2026-09-08', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Transporte', aplicaCashback: false },
+                    { id: 'gasto_7', descripcion: 'Transferencia Bre-B: ROLANDO FUERTES', monto: 14000, fecha: '2026-09-04', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Transporte', aplicaCashback: false },
+                    { id: 'gasto_8', descripcion: 'Transferencia Bre-B: LUIS NACED', monto: 6000, fecha: '2026-09-04', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Transporte', aplicaCashback: false },
+                    { id: 'gasto_9', descripcion: 'Transferencia Bre-B: DAVID MEJIA', monto: 5000, fecha: '2026-09-04', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Transporte', aplicaCashback: false },
+                    { id: 'gasto_10', descripcion: 'Transferencia Bre-B: JAMES ORDONEZ', monto: 35000, fecha: '2026-09-04', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Transporte', aplicaCashback: false },
+                    { id: 'gasto_11', descripcion: 'Transferencia Bre-B: JOSE ROSERO', monto: 5000, fecha: '2026-09-04', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Transporte', aplicaCashback: false },
+                    
+                    // PAGOS PSE
+                    { id: 'gasto_12', descripcion: 'Pago PSE - Portal Zona Pagos BBVA', monto: 70000, fecha: '2026-09-04', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Servicios', aplicaCashback: false },
+                    { id: 'gasto_13', descripcion: 'Pago PSE - Tarjeta Itau (GOU PAYMENTS)', monto: 10912, fecha: '2026-09-08', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Servicios', aplicaCashback: false }
+                ];
+            });
+
+            const [cuentaFavoritaId, setCuentaFavoritaId] = useState(() => localStorage.getItem('cuentaFavoritaId') || '');
+
+            const [trm, setTrm] = useState(() => localStorage.getItem('trmManual') || '');
+
+            const [hideAmounts, setHideAmounts] = useState(() => localStorage.getItem('hideAmounts') === 'true');
+
+            const [tab, setTab] = useState('home');
+            const [showCdtModal, setShowCdtModal] = useState(false);
+            const [showCuentaModal, setShowCuentaModal] = useState(false);
+            const [showDeudaModal, setShowDeudaModal] = useState(false);
+            const [showOtroModal, setShowOtroModal] = useState(false);
+            const [editingCdtId, setEditingCdtId] = useState(null);
+            const [editingCuentaId, setEditingCuentaId] = useState(null);
+            const [editingDeudaId, setEditingDeudaId] = useState(null);
+            const [editingOtroId, setEditingOtroId] = useState(null);
+            const [toast, setToast] = useState('');
+            const [searchGasto, setSearchGasto] = useState('');
+            const [editingGastoId, setEditingGastoId] = useState(null);
+            const [showGastoModal, setShowGastoModal] = useState(false);
+            const [lastBackupDate, setLastBackupDate] = useState(() => localStorage.getItem('lastBackupDate') || '');
+            
+            const [tarjetas, setTarjetas] = useState(() => {
+                const saved = localStorage.getItem('tarjetas');
+                return saved ? JSON.parse(saved) : [];
+            });
+
+            // Auto-populate tarjetas con cashback por defecto (fusiona por nombre, no borra lo existente)
+            useEffect(() => {
+                const tarjetasDefault = [
+                    { id: 'tarjeta_rappi', nombre: 'Rappi', banco: 'Rappi', diaCorte: 19, diasGracia: DIAS_GRACIA_DEFAULT, cashbackPct: 1 },
+                    { id: 'tarjeta_bogota', nombre: 'Banco de Bogotá', banco: 'Banco de Bogotá', diaCorte: 19, diasGracia: DIAS_GRACIA_DEFAULT, cashbackPct: 5 }
+                ];
+                setTarjetas(prev => {
+                    const existingNombres = new Set(prev.map(t => t.nombre));
+                    const faltantes = tarjetasDefault.filter(t => !existingNombres.has(t.nombre));
+                    return faltantes.length > 0 ? [...prev, ...faltantes] : prev;
+                });
+            }, []);
+            
+            const [showTarjetaModal, setShowTarjetaModal] = useState(false);
+            const [editingTarjetaId, setEditingTarjetaId] = useState(null);
+            const [tarjetaForm, setTarjetaForm] = useState({ nombre: '', banco: 'Rappi', diaCorte: 19, diasGracia: DIAS_GRACIA_DEFAULT, cashbackPct: 0 });
+
+            const emptyCdtForm = { nombre: '', plataforma: 'Lulo Bank', principal: '', tasa: '', fechaCreacion: '', fechaVencimiento: '', aplicaGmf: false };
+            const emptyCuentaForm = { nombre: '', plataforma: 'Banco de Bogotá', tipo: 'Ahorro', saldo: '', tasa: '', customBanco: '' };
+            const emptyDeudaForm = { nombre: '', tarjeta: 'Rappi', montoTotal: '', cuotasTotales: 1, cuotasPagadas: 0, fechaCompra: '' };
+            const emptyOtroForm = { nombre: '', tipo: 'Dólares', moneda: 'USD', monto: '', tieneRentabilidad: false, tasa: '', vencimiento: '' };
+            const getEmptyGastoForm = () => {
+                const hoy = new Date();
+                const year = hoy.getFullYear();
+                const month = String(hoy.getMonth() + 1).padStart(2, '0');
+                const day = String(hoy.getDate()).padStart(2, '0');
+                const fechaHoy = `${year}-${month}-${day}`;
+                return { descripcion: '', monto: '', metodo: 'cuenta', tarjeta: 'Rappi', fecha: fechaHoy, aplicaCashback: false, categoria: 'Mercado' };
+            };
+
+            const [cdtForm, setCdtForm] = useState(emptyCdtForm);
+            const [cuentaForm, setCuentaForm] = useState(emptyCuentaForm);
+            const [deudaForm, setDeudaForm] = useState(emptyDeudaForm);
+            const [otroForm, setOtroForm] = useState(emptyOtroForm);
+            const [gastoForm, setGastoForm] = useState(getEmptyGastoForm());
+
+            useEffect(() => { localStorage.setItem('cdts', JSON.stringify(cdts)); }, [cdts]);
+            useEffect(() => { localStorage.setItem('cuentas', JSON.stringify(cuentas)); }, [cuentas]);
+            useEffect(() => { localStorage.setItem('fondos', JSON.stringify(fondos)); }, [fondos]);
+            useEffect(() => { localStorage.setItem('fondosFecha', fondosFecha); }, [fondosFecha]);
+            useEffect(() => { localStorage.setItem('deudasTC', JSON.stringify(deudas)); }, [deudas]);
+            useEffect(() => { localStorage.setItem('otrosActivos', JSON.stringify(otrosActivos)); }, [otrosActivos]);
+            useEffect(() => { localStorage.setItem('historialRendimiento', JSON.stringify(historial)); }, [historial]);
+            useEffect(() => { localStorage.setItem('historialMensual', JSON.stringify(historialMensual)); }, [historialMensual]);
+            useEffect(() => { localStorage.setItem('gastosDiarios', JSON.stringify(gastos)); }, [gastos]);
+            useEffect(() => { localStorage.setItem('cuentaFavoritaId', cuentaFavoritaId); }, [cuentaFavoritaId]);
+            useEffect(() => { localStorage.setItem('trmManual', trm); }, [trm]);
+            useEffect(() => { localStorage.setItem('hideAmounts', String(hideAmounts)); }, [hideAmounts]);
+
+            // Auto-populate deudas TC desde Gmail (fusiona por ID, no borra lo existente)
+            useEffect(() => {
+                const deudasGmail = [
+                    { id: 'deuda_1', nombre: 'Kabuki Cocina Nikkei', tarjeta: 'Rappi', montoTotal: 106196.77, cuotasTotales: 1, cuotasPagadas: 0, fechaCompra: '2026-09-03' },
+                    { id: 'deuda_2', nombre: 'Libros de regalo', tarjeta: 'Rappi', montoTotal: 128600, cuotasTotales: 1, cuotasPagadas: 0, fechaCompra: '2026-09-04' },
+                    { id: 'deuda_3', nombre: 'Cena con Sofía y mamás', tarjeta: 'Rappi', montoTotal: 70000, cuotasTotales: 1, cuotasPagadas: 0, fechaCompra: '2026-09-04' },
+                    { id: 'deuda_4', nombre: 'Productos para el hogar (MercadoLibre)', tarjeta: 'Rappi', montoTotal: 323193, cuotasTotales: 1, cuotasPagadas: 0, fechaCompra: '2026-09-07' },
+                    { id: 'deuda_5', nombre: 'Mr Woof', tarjeta: 'Rappi', montoTotal: 65000, cuotasTotales: 1, cuotasPagadas: 0, fechaCompra: '2026-09-09' },
+                    { id: 'deuda_6', nombre: 'Paramount Plus (suscripción)', tarjeta: 'Rappi', montoTotal: 23500, cuotasTotales: 1, cuotasPagadas: 0, fechaCompra: '2026-09-09' }
+                ];
+                setDeudas(prev => {
+                    const existingIds = new Set(prev.map(d => d.id));
+                    const faltantes = deudasGmail.filter(d => !existingIds.has(d.id));
+                    return faltantes.length > 0 ? [...prev, ...faltantes] : prev;
+                });
+            }, []);
+
+            // Auto-populate gastos desde Gmail (fusiona por ID, no borra lo existente)
+            useEffect(() => {
+                const gastosGmail = [
+                    { id: 'gasto_1', descripcion: 'Kabuki Cocina Nikkei', monto: 106196.77, fecha: '2026-09-03', metodo: 'tarjeta', tarjeta: 'Rappi', categoria: 'Comida', aplicaCashback: false },
+                    { id: 'gasto_2', descripcion: 'Taxi (Rolando Fuertes)', monto: 14000, fecha: '2026-09-04', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Transporte', aplicaCashback: false },
+                    { id: 'gasto_3', descripcion: 'Taxi (Luis Naced)', monto: 6000, fecha: '2026-09-04', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Transporte', aplicaCashback: false },
+                    { id: 'gasto_4', descripcion: 'Internet Unimos', monto: 70000, fecha: '2026-09-04', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Servicios', aplicaCashback: false },
+                    { id: 'gasto_5', descripcion: 'Libros de regalo', monto: 128600, fecha: '2026-09-04', metodo: 'tarjeta', tarjeta: 'Rappi', categoria: 'Regalos', aplicaCashback: false },
+                    { id: 'gasto_6', descripcion: 'Taxi (David Mejia)', monto: 5000, fecha: '2026-09-04', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Transporte', aplicaCashback: false },
+                    { id: 'gasto_7', descripcion: 'Sandía de regalo', monto: 35000, fecha: '2026-09-04', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Regalos', aplicaCashback: false },
+                    { id: 'gasto_8', descripcion: 'Taxi (Jose Rosero)', monto: 5000, fecha: '2026-09-04', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Transporte', aplicaCashback: false },
+                    { id: 'gasto_9', descripcion: 'Cena con Sofía y mamás', monto: 70000, fecha: '2026-09-04', metodo: 'tarjeta', tarjeta: 'Rappi', categoria: 'Salidas Familia', aplicaCashback: false },
+                    { id: 'gasto_10', descripcion: 'Taxi #1', monto: 5000, fecha: '2026-09-05', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Transporte', aplicaCashback: false },
+                    { id: 'gasto_11', descripcion: 'Taxi #2', monto: 6000, fecha: '2026-09-05', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Transporte', aplicaCashback: false },
+                    { id: 'gasto_12', descripcion: 'Carpintero', monto: 240000, fecha: '2026-09-07', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Hogar', aplicaCashback: false },
+                    { id: 'gasto_13', descripcion: 'Antepechos', monto: 200000, fecha: '2026-09-07', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Hogar', aplicaCashback: false },
+                    { id: 'gasto_14', descripcion: 'Productos para el hogar (MercadoLibre)', monto: 323193, fecha: '2026-09-07', metodo: 'tarjeta', tarjeta: 'Rappi', categoria: 'Hogar', aplicaCashback: false },
+                    { id: 'gasto_15', descripcion: 'Pago Tarjeta Itau', monto: 10912, fecha: '2026-09-08', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Servicios', aplicaCashback: false },
+                    { id: 'gasto_16', descripcion: 'Taxi (Miguel Paguay)', monto: 12000, fecha: '2026-09-09', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Transporte', aplicaCashback: false },
+                    { id: 'gasto_17', descripcion: 'Favor a mamá (Josi Cortes) - reembolsado en efectivo', monto: 173000, fecha: '2026-09-09', metodo: 'efectivo', categoria: 'Otros', aplicaCashback: false },
+                    { id: 'gasto_18', descripcion: 'Pago PSE - Ins Sa', monto: 33200, fecha: '2026-09-09', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Servicios', aplicaCashback: false },
+                    { id: 'gasto_19', descripcion: 'Mr Woof', monto: 65000, fecha: '2026-09-09', metodo: 'tarjeta', tarjeta: 'Rappi', categoria: 'Mercado', aplicaCashback: false },
+                    { id: 'gasto_20', descripcion: 'Taxi (Marcos Ferrebus)', monto: 5000, fecha: '2026-09-09', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Transporte', aplicaCashback: false },
+                    { id: 'gasto_21', descripcion: 'Paramount Plus (suscripción)', monto: 23500, fecha: '2026-09-09', metodo: 'tarjeta', tarjeta: 'Rappi', categoria: 'Ocio', aplicaCashback: false },
+                    { id: 'gasto_22', descripcion: 'Taxi (Edwin Portilla)', monto: 12000, fecha: '2026-09-10', metodo: 'cuenta', tarjeta: 'Lulo Bank', categoria: 'Transporte', aplicaCashback: false }
+                ];
+                setGastos(prev => {
+                    const existingIds = new Set(prev.map(g => g.id));
+                    const faltantes = gastosGmail.filter(g => !existingIds.has(g.id));
+                    return faltantes.length > 0 ? [...prev, ...faltantes] : prev;
+                });
+            }, []);
+            useEffect(() => { localStorage.setItem('lastBackupDate', lastBackupDate); }, [lastBackupDate]);
+            useEffect(() => { localStorage.setItem('tarjetas', JSON.stringify(tarjetas)); }, [tarjetas]);
+
+            const showToast = (msg) => {
+                setToast(msg);
+                setTimeout(() => setToast(''), 2200);
+            };
+
+            // ---------- Exportar / Importar ----------
+            const fileInputRef = React.useRef(null);
+
+            const handleExport = () => {
+                const datos = {
+                    version: 1,
+                    exportadoEn: new Date().toISOString(),
+                    cdts,
+                    cuentas,
+                    fondos,
+                    fondosFecha,
+                    deudasTC: deudas,
+                    otrosActivos,
+                    historialRendimiento: historial,
+                    gastosDiarios: gastos,
+                    cuentaFavoritaId,
+                    trmManual: trm
+                };
+                const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const fecha = new Date().toISOString().slice(0, 10);
+                a.href = url;
+                a.download = `portafolio-inversiones-${fecha}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('Datos exportados');
+            };
+
+            const handleImportClick = () => {
+                if (fileInputRef.current) fileInputRef.current.click();
+            };
+
+            const handleImportFile = (e) => {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const datos = JSON.parse(event.target.result);
+                        if (!confirm('Esto reemplazará toda la información actual con la del archivo importado. ¿Continuar?')) {
+                            e.target.value = '';
+                            return;
+                        }
+                        if (Array.isArray(datos.cdts)) setCdts(datos.cdts);
+                        if (Array.isArray(datos.cuentas)) setCuentas(datos.cuentas);
+                        if (datos.fondos) setFondos(datos.fondos);
+                        if (datos.fondosFecha) setFondosFecha(datos.fondosFecha);
+                        if (Array.isArray(datos.deudasTC)) setDeudas(datos.deudasTC);
+                        if (Array.isArray(datos.otrosActivos)) setOtrosActivos(datos.otrosActivos);
+                        if (Array.isArray(datos.historialRendimiento)) setHistorial(datos.historialRendimiento);
+                        if (Array.isArray(datos.gastosDiarios)) setGastos(datos.gastosDiarios);
+                        if (datos.cuentaFavoritaId) setCuentaFavoritaId(datos.cuentaFavoritaId);
+                        if (datos.trmManual) setTrm(datos.trmManual);
+                        showToast('Datos importados correctamente');
+                    } catch (err) {
+                        alert('El archivo no es un JSON válido de este portafolio.');
+                    }
+                    e.target.value = '';
+                };
+                reader.readAsText(file);
+            };
+
+            const calcularInteres = (principal, tasa, fechaCreacion) => {
+                const inicio = new Date(fechaCreacion);
+                const hoy = new Date();
+                const diasTranscurridos = Math.max(0, Math.floor((hoy - inicio) / (1000 * 60 * 60 * 24)));
+                const interesTotal = (principal * (tasa / 100) * diasTranscurridos) / 365;
+                const interesDiario = (principal * (tasa / 100)) / 365;
+                return {
+                    interesTotal,
+                    interesDiario,
+                    diasTranscurridos,
+                    saldoActual: principal + interesTotal
+                };
+            };
+
+            // ---------- CDTs ----------
+            const handleSaveCdt = () => {
+                if (!cdtForm.nombre || !cdtForm.principal || !cdtForm.tasa || !cdtForm.fechaCreacion || !cdtForm.fechaVencimiento) {
+                    alert('Completa todos los campos');
+                    return;
+                }
+                
+                // Calcular principal con GMF si aplica
+                let principalGuardado = Number(cdtForm.principal);
+                if (cdtForm.aplicaGmf) {
+                    // GMF es 4 pesos por cada 1000 (0.4%)
+                    const gmf = principalGuardado * 0.004;
+                    principalGuardado = principalGuardado - gmf;
+                }
+                
+                const cdtGuardar = { ...cdtForm, principal: principalGuardado };
+                
+                if (editingCdtId) {
+                    setCdts(cdts.map(c => c.id === editingCdtId ? { ...cdtGuardar, id: editingCdtId } : c));
+                    showToast('CDT actualizado');
+                } else {
+                    setCdts([...cdts, { ...cdtGuardar, id: Date.now() }]);
+                    showToast('CDT añadido');
+                }
+                setEditingCdtId(null);
+                setCdtForm(emptyCdtForm);
+                setShowCdtModal(false);
+            };
+
+            const handleDeleteCdt = (id) => {
+                if (confirm('¿Eliminar este CDT?')) {
+                    setCdts(cdts.filter(c => c.id !== id));
+                    showToast('CDT eliminado');
+                }
+            };
+
+            const handleEditCdt = (cdt) => {
+                setCdtForm(cdt);
+                setEditingCdtId(cdt.id);
+                setShowCdtModal(true);
+            };
+
+            // ---------- Cuentas de ahorro ----------
+            const handleSaveCuenta = () => {
+                if (!cuentaForm.nombre || cuentaForm.saldo === '') {
+                    alert('Completa nombre y saldo');
+                    return;
+                }
+                if (cuentaForm.plataforma === 'Otro' && !cuentaForm.customBanco) {
+                    alert('Ingresa el nombre del banco');
+                    return;
+                }
+                
+                const plataformaGuardar = cuentaForm.plataforma === 'Otro' ? cuentaForm.customBanco : cuentaForm.plataforma;
+                const cuentaGuardar = { ...cuentaForm, plataforma: plataformaGuardar };
+                
+                if (editingCuentaId) {
+                    setCuentas(cuentas.map(c => c.id === editingCuentaId ? { ...cuentaGuardar, id: editingCuentaId, actualizado: new Date().toISOString() } : c));
+                    showToast('Cuenta actualizada');
+                } else {
+                    setCuentas([...cuentas, { ...cuentaGuardar, id: Date.now(), actualizado: new Date().toISOString() }]);
+                    showToast('Cuenta añadida');
+                }
+                setEditingCuentaId(null);
+                setCuentaForm(emptyCuentaForm);
+                setShowCuentaModal(false);
+            };
+
+            const handleDeleteCuenta = (id) => {
+                if (confirm('¿Eliminar esta cuenta?')) {
+                    setCuentas(cuentas.filter(c => c.id !== id));
+                    showToast('Cuenta eliminada');
+                }
+            };
+
+            // ========== TARJETAS DE CRÉDITO ==========
+            const handleSaveTarjeta = () => {
+                if (!tarjetaForm.nombre || !tarjetaForm.banco) {
+                    alert('Completa nombre y banco');
+                    return;
+                }
+                
+                if (editingTarjetaId) {
+                    setTarjetas(tarjetas.map(t => t.id === editingTarjetaId ? { ...tarjetaForm, id: editingTarjetaId } : t));
+                    showToast('Tarjeta actualizada');
+                } else {
+                    setTarjetas([...tarjetas, { ...tarjetaForm, id: Date.now() }]);
+                    showToast('Tarjeta agregada');
+                }
+                setEditingTarjetaId(null);
+                setTarjetaForm({ nombre: '', banco: 'Rappi', diaCorte: 19, diasGracia: DIAS_GRACIA_DEFAULT, cashbackPct: 0 });
+                setShowTarjetaModal(false);
+            };
+
+            const handleEditTarjeta = (tarjeta) => {
+                setTarjetaForm(tarjeta);
+                setEditingTarjetaId(tarjeta.id);
+                setShowTarjetaModal(true);
+            };
+
+            const handleDeleteTarjeta = (id) => {
+                if (confirm('¿Eliminar esta tarjeta?')) {
+                    setTarjetas(tarjetas.filter(t => t.id !== id));
+                    showToast('Tarjeta eliminada');
+                }
+            };
+
+            const handleEditCuenta = (cuenta) => {
+                setCuentaForm({ nombre: cuenta.nombre, plataforma: cuenta.plataforma, tipo: cuenta.tipo, saldo: cuenta.saldo, tasa: cuenta.tasa || '' });
+                setEditingCuentaId(cuenta.id);
+                setShowCuentaModal(true);
+            };
+
+            // ---------- Deudas de Tarjeta de Crédito ----------
+            const calcularDeuda = (montoTotal, cuotasTotales, cuotasPagadas) => {
+                const cuotas = Math.max(1, Number(cuotasTotales) || 1);
+                const pagadas = Math.min(cuotas, Math.max(0, Number(cuotasPagadas) || 0));
+                const valorCuota = Number(montoTotal) / cuotas;
+                const saldoPendiente = Math.max(0, Number(montoTotal) - valorCuota * pagadas);
+                const cuotasRestantes = cuotas - pagadas;
+                return { valorCuota, saldoPendiente, cuotasRestantes };
+            };
+
+            // Ganancia estimada de financiar a cuotas sin interés en vez de pagar de contado:
+            // el dinero que no se paga de una vez (montoTotal - primera cuota) se invierte
+            // durante el resto del plazo (cuotasTotales - 1 meses) a la tasa promedio.
+            const calcularGananciaCuotas = (montoTotal, cuotasTotales, tasaAnual) => {
+                const cuotas = Math.max(1, Number(cuotasTotales) || 1);
+                if (cuotas <= 1 || tasaAnual === null || tasaAnual === undefined) return null;
+                const valorCuota = Number(montoTotal) / cuotas;
+                const montoRetenido = Number(montoTotal) - valorCuota;
+                const mesesAprovechados = cuotas - 1;
+                const ganancia = montoRetenido * (tasaAnual / 100) * (mesesAprovechados / 12);
+                return { montoRetenido, mesesAprovechados, ganancia };
+            };
+
+            const handleSaveDeuda = () => {
+                if (!deudaForm.nombre || !deudaForm.montoTotal || !deudaForm.cuotasTotales) {
+                    alert('Completa nombre, monto total y número de cuotas');
+                    return;
+                }
+                if (editingDeudaId) {
+                    setDeudas(deudas.map(d => d.id === editingDeudaId ? { ...deudaForm, id: editingDeudaId } : d));
+                    showToast('Compra actualizada');
+                } else {
+                    setDeudas([...deudas, { ...deudaForm, id: Date.now() }]);
+                    showToast('Compra añadida');
+                }
+                setEditingDeudaId(null);
+                setDeudaForm(emptyDeudaForm);
+                setShowDeudaModal(false);
+            };
+
+            const handleDeleteDeuda = (id) => {
+                if (confirm('¿Eliminar esta compra?')) {
+                    setDeudas(deudas.filter(d => d.id !== id));
+                    showToast('Compra eliminada');
+                }
+            };
+
+            const handleEditDeuda = (deuda) => {
+                setDeudaForm(deuda);
+                setEditingDeudaId(deuda.id);
+                setShowDeudaModal(true);
+            };
+
+            // ---------- Otros Activos (dólares, efectivo, colección, acciones, etc.) ----------
+            const handleSaveOtro = () => {
+                if (!otroForm.nombre || otroForm.monto === '') {
+                    alert('Completa nombre y monto');
+                    return;
+                }
+                if (editingOtroId) {
+                    setOtrosActivos(otrosActivos.map(o => o.id === editingOtroId ? { ...otroForm, id: editingOtroId } : o));
+                    showToast('Activo actualizado');
+                } else {
+                    setOtrosActivos([...otrosActivos, { ...otroForm, id: Date.now() }]);
+                    showToast('Activo añadido');
+                }
+                setEditingOtroId(null);
+                setOtroForm(emptyOtroForm);
+                setShowOtroModal(false);
+            };
+
+            const handleDeleteOtro = (id) => {
+                if (confirm('¿Eliminar este activo?')) {
+                    setOtrosActivos(otrosActivos.filter(o => o.id !== id));
+                    showToast('Activo eliminado');
+                }
+            };
+
+            const handleEditOtro = (otro) => {
+                setOtroForm(otro);
+                setEditingOtroId(otro.id);
+                setShowOtroModal(true);
+            };
+
+            // ---------- Gastos Diarios ----------
+            const handleSaveGasto = () => {
+                if (!gastoForm.descripcion || !gastoForm.monto) {
+                    alert('Completa descripción y monto');
+                    return;
+                }
+                const monto = Number(gastoForm.monto);
+
+                if (gastoForm.metodo === 'cuenta') {
+                    if (!cuentaFavoritaId) {
+                        alert('Primero elige tu banco/cuenta favorita arriba');
+                        return;
+                    }
+                    setCuentas(cuentas.map(c => c.id === Number(cuentaFavoritaId)
+                        ? { ...c, saldo: Number(c.saldo || 0) - monto }
+                        : c));
+                    setGastos([...gastos, {
+                        id: Date.now(),
+                        descripcion: gastoForm.descripcion,
+                        monto,
+                        metodo: 'cuenta',
+                        cuentaId: cuentaFavoritaId,
+                        fecha: gastoForm.fecha,
+                        categoria: gastoForm.categoria
+                    }]);
+                    showToast('Gasto registrado y descontado de tu cuenta');
+                } else if (gastoForm.metodo === 'tarjeta') {
+                    const deudaId = Date.now() + 1;
+                    const cashbackPorcentaje = gastoForm.aplicaCashback ? CASHBACK_TARJETAS[gastoForm.tarjeta] : 0;
+                    const cashbackMonto = gastoForm.aplicaCashback ? (monto * cashbackPorcentaje / 100) : 0;
+                    setDeudas([...deudas, {
+                        id: deudaId,
+                        nombre: gastoForm.descripcion,
+                        tarjeta: gastoForm.tarjeta,
+                        montoTotal: gastoForm.monto,
+                        cuotasTotales: 1,
+                        cuotasPagadas: 0,
+                        fechaCompra: gastoForm.fecha,
+                        aplicaCashback: gastoForm.aplicaCashback,
+                        cashbackMonto
+                    }]);
+                    setGastos([...gastos, {
+                        id: Date.now(),
+                        descripcion: gastoForm.descripcion,
+                        monto,
+                        metodo: 'tarjeta',
+                        tarjeta: gastoForm.tarjeta,
+                        deudaId,
+                        fecha: gastoForm.fecha,
+                        aplicaCashback: gastoForm.aplicaCashback,
+                        cashbackMonto,
+                        categoria: gastoForm.categoria
+                    }]);
+                    showToast('Gasto registrado en Deudas TC');
+                } else {
+                    setGastos([...gastos, {
+                        id: Date.now(),
+                        descripcion: gastoForm.descripcion,
+                        monto,
+                        metodo: 'efectivo',
+                        fecha: gastoForm.fecha,
+                        categoria: gastoForm.categoria
+                    }]);
+                    showToast('Gasto en efectivo registrado');
+                }
+                setGastoForm(getEmptyGastoForm());
+            };
+
+            const handleEditGasto = (gasto) => {
+                setGastoForm(gasto);
+                setEditingGastoId(gasto.id);
+                setShowGastoModal(true);
+            };
+
+            const handleUpdateGasto = () => {
+                if (!gastoForm.descripcion || !gastoForm.monto) {
+                    showToast('Completa descripción y monto');
+                    return;
+                }
+
+                setGastos(gastos.map(g => g.id === editingGastoId ? { ...gastoForm, id: editingGastoId } : g));
+                setEditingGastoId(null);
+                setShowGastoModal(false);
+                setGastoForm(getEmptyGastoForm());
+                showToast('Gasto actualizado');
+            };
+
+            const handleDeleteGasto = (id) => {
+                const gasto = gastos.find(g => g.id === id);
+                if (!gasto) return;
+                if (!confirm('¿Eliminar este gasto? Si fue pagado desde tu cuenta principal, se le devolverá el monto.')) return;
+
+                if (gasto.metodo === 'cuenta' && gasto.cuentaId) {
+                    setCuentas(cuentas.map(c => c.id === Number(gasto.cuentaId)
+                        ? { ...c, saldo: Number(c.saldo || 0) + Number(gasto.monto) }
+                        : c));
+                } else if (gasto.metodo === 'tarjeta' && gasto.deudaId) {
+                    setDeudas(deudas.filter(d => d.id !== gasto.deudaId));
+                }
+                setGastos(gastos.filter(g => g.id !== id));
+                showToast('Gasto eliminado');
+            };
+
+            const handleSaveFondos = () => {
+                setFondosFecha(new Date().toISOString());
+                showToast('Patrimonio del mes guardado');
+            };
+
+            // ---------- Totales ----------
+            const totalCdtsSaldo = useMemo(() => cdts.reduce((acc, cdt) => {
+                const { saldoActual } = calcularInteres(Number(cdt.principal), Number(cdt.tasa), cdt.fechaCreacion);
+                return acc + saldoActual;
+            }, 0), [cdts]);
+
+            const totalCdtsInteres = useMemo(() => cdts.reduce((acc, cdt) => {
+                const { interesTotal } = calcularInteres(Number(cdt.principal), Number(cdt.tasa), cdt.fechaCreacion);
+                return acc + interesTotal;
+            }, 0), [cdts]);
+
+            const totalCdtsPrincipal = useMemo(() => cdts.reduce((acc, cdt) => acc + Number(cdt.principal), 0), [cdts]);
+
+            const totalCuentas = useMemo(() => cuentas.reduce((acc, c) => acc + Number(c.saldo || 0), 0), [cuentas]);
+
+            // Sección 1: CDTs (con interés diario acumulado) + cuentas de alto rendimiento
+            const totalSeccion1 = totalCdtsSaldo + totalCuentas;
+
+            const totalDeudaTC = useMemo(() => deudas.reduce((acc, d) => {
+                const { saldoPendiente } = calcularDeuda(d.montoTotal, d.cuotasTotales, d.cuotasPagadas);
+                return acc + saldoPendiente;
+            }, 0), [deudas]);
+
+            // Otros activos, agrupados por moneda (no se mezclan tasas de cambio)
+            const totalesOtrosPorMoneda = useMemo(() => {
+                const totales = {};
+                otrosActivos.forEach(o => {
+                    const moneda = o.moneda || 'COP';
+                    totales[moneda] = (totales[moneda] || 0) + Number(o.monto || 0);
+                });
+                return totales;
+            }, [otrosActivos]);
+
+            // Otros activos convertidos a COP usando la TRM que tú mismo ingresas (sin internet)
+            const totalOtrosEnCOP = useMemo(() => {
+                let total = 0;
+                Object.entries(totalesOtrosPorMoneda).forEach(([moneda, monto]) => {
+                    if (moneda === 'COP') {
+                        total += monto;
+                    } else if (moneda === 'USD') {
+                        total += monto * Number(trm || 0);
+                    }
+                    // otras monedas: no se convierten (aún no soportado), no se suman al total
+                });
+                return total;
+            }, [totalesOtrosPorMoneda, trm]);
+
+            const hayUsdSinTrm = Number(totalesOtrosPorMoneda.USD || 0) > 0 && !Number(trm);
+
+            // Sección 2 (Total): Sección 1 + FPV + cesantías + pensión obligatoria + otros activos (convertidos a COP) - deuda TC
+            const totalSeccion2 = totalSeccion1
+                + Number(fondos.fpv || 0)
+                + Number(fondos.cesantias || 0)
+                + Number(fondos.pensionObligatoria || 0)
+                + totalOtrosEnCOP
+                - totalDeudaTC;
+
+            // Gastos diarios: totales de hoy y del mes en curso
+            const gastosOrdenados = useMemo(() =>
+                [...gastos].sort((a, b) => new Date(b.fecha) - new Date(a.fecha)),
+                [gastos]);
+
+            const getHoyStr = () => {
+                const hoy = new Date();
+                const year = hoy.getFullYear();
+                const month = String(hoy.getMonth() + 1).padStart(2, '0');
+                const day = String(hoy.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+            const hoyStr = getHoyStr();
+            const mesActualStr = hoyStr.slice(0, 7);
+
+            const totalGastadoHoy = useMemo(() =>
+                gastos.filter(g => g.fecha === hoyStr).reduce((acc, g) => acc + Number(g.monto || 0), 0),
+                [gastos, hoyStr]);
+
+            const totalGastadoMes = useMemo(() =>
+                gastos.filter(g => (g.fecha || '').startsWith(mesActualStr)).reduce((acc, g) => acc + Number(g.monto || 0), 0),
+                [gastos, mesActualStr]);
+
+            const cuentaFavorita = useMemo(() =>
+                cuentas.find(c => String(c.id) === String(cuentaFavoritaId)) || null,
+                [cuentas, cuentaFavoritaId]);
+
+            // Tasa de rendimiento promedio ponderada: CDTs + Cuentas de Alto Rendimiento (solo ítems con tasa registrada)
+            // Tasa promedio ponderada (CDTs + Cuentas):
+            // Suma (monto × tasa) de cada activo / Suma montos = tasa promedio real según cuánta plata gana a cada tasa
+            const tasaPromedioPonderada = useMemo(() => {
+                let sumaGananciaAnual = 0;
+                let sumaMontos = 0;
+                cdts.forEach(c => {
+                    const monto = Number(c.principal || 0);
+                    const tasa = Number(c.tasa || 0);
+                    if (monto > 0 && c.tasa !== '' && c.tasa !== undefined) {
+                        sumaGananciaAnual += monto * tasa;
+                        sumaMontos += monto;
+                    }
+                });
+                cuentas.forEach(c => {
+                    const monto = Number(c.saldo || 0);
+                    const tasa = Number(c.tasa || 0);
+                    if (monto > 0 && c.tasa !== '' && c.tasa !== undefined && c.tasa !== null) {
+                        sumaGananciaAnual += monto * tasa;
+                        sumaMontos += monto;
+                    }
+                });
+                return sumaMontos > 0 ? sumaGananciaAnual / sumaMontos : null;
+            }, [cdts, cuentas]);
+
+            // Tasa promedio ponderada solo de CDTs
+            const tasaPromedioCdts = useMemo(() => {
+                let sumaGananciaAnual = 0;
+                let sumaMontos = 0;
+                cdts.forEach(c => {
+                    const monto = Number(c.principal || 0);
+                    const tasa = Number(c.tasa || 0);
+                    if (monto > 0 && c.tasa !== '' && c.tasa !== undefined) {
+                        sumaGananciaAnual += monto * tasa;
+                        sumaMontos += monto;
+                    }
+                });
+                return sumaMontos > 0 ? sumaGananciaAnual / sumaMontos : null;
+            }, [cdts]);
+
+            // Tasa promedio ponderada solo de cuentas (solo las que tienen tasa registrada)
+            const tasaPromedioCuentas = useMemo(() => {
+                let sumaGananciaAnual = 0;
+                let sumaMontos = 0;
+                cuentas.forEach(c => {
+                    const monto = Number(c.saldo || 0);
+                    const tasa = Number(c.tasa || 0);
+                    if (monto > 0 && c.tasa !== '' && c.tasa !== undefined && c.tasa !== null) {
+                        sumaGananciaAnual += monto * tasa;
+                        sumaMontos += monto;
+                    }
+                });
+                return sumaMontos > 0 ? sumaGananciaAnual / sumaMontos : null;
+            }, [cuentas]);
+
+            // Rendimiento diario estimado: (CDTs + Cuentas, con montos actualizados) x tasa promedio ponderada / 365
+            const rendimientoDiarioEstimado = useMemo(() => {
+                if (tasaPromedioPonderada === null) return null;
+                const baseActualizada = totalCdtsSaldo + totalCuentas;
+                return (baseActualizada * (tasaPromedioPonderada / 100)) / 365;
+            }, [tasaPromedioPonderada, totalCdtsSaldo, totalCuentas]);
+
+            // Historial de rendimiento: registra un snapshot diario del Líquido (Sección 1: CDTs + Cuentas)
+            // El Total (Sección 2) no se trackea a diario porque solo cambia cuando actualizas FPV/Pensión/Cesantías/Otros a mano;
+            // su evolución real se mide mes a mes en historialMensual.
+            useEffect(() => {
+                const hoy = new Date().toISOString().slice(0, 10);
+                setHistorial(prev => {
+                    const nuevo = [...prev];
+                    if (nuevo.length && nuevo[nuevo.length - 1].fecha === hoy) {
+                        if (nuevo[nuevo.length - 1].total === totalSeccion1) return prev;
+                        nuevo[nuevo.length - 1] = { fecha: hoy, total: totalSeccion1 };
+                    } else {
+                        nuevo.push({ fecha: hoy, total: totalSeccion1 });
+                    }
+                    return nuevo.slice(-90);
+                });
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+            }, [totalSeccion1]);
+
+            const historialOrdenado = useMemo(() =>
+                [...historial].sort((a, b) => new Date(a.fecha) - new Date(b.fecha)),
+                [historial]);
+
+            const variacionDiaria = useMemo(() => {
+                if (historialOrdenado.length < 2) return null;
+                const hoy = historialOrdenado[historialOrdenado.length - 1];
+                const ayer = historialOrdenado[historialOrdenado.length - 2];
+                const diferencia = hoy.total - ayer.total;
+                const porcentaje = ayer.total !== 0 ? (diferencia / ayer.total) * 100 : 0;
+                return { diferencia, porcentaje };
+            }, [historialOrdenado]);
+
+            const ultimos7Dias = useMemo(() => historialOrdenado.slice(-7), [historialOrdenado]);
+
+            const variacion7Dias = useMemo(() => {
+                if (ultimos7Dias.length < 2) return null;
+                const primero = ultimos7Dias[0];
+                const ultimo = ultimos7Dias[ultimos7Dias.length - 1];
+                const diferencia = ultimo.total - primero.total;
+                const porcentaje = primero.total !== 0 ? (diferencia / primero.total) * 100 : 0;
+                return { diferencia, porcentaje };
+            }, [ultimos7Dias]);
+
+            const variacionMensual = useMemo(() => {
+                if (historialMensual.length < 2) return null;
+                const actual = historialMensual[historialMensual.length - 1];
+                const anterior = historialMensual[historialMensual.length - 2];
+                const diferenciaLiquido = actual.liquido - anterior.liquido;
+                const porcentajeLiquido = anterior.liquido !== 0 ? (diferenciaLiquido / anterior.liquido) * 100 : 0;
+                const diferenciaTotal = actual.total - anterior.total;
+                const porcentajeTotal = anterior.total !== 0 ? (diferenciaTotal / anterior.total) * 100 : 0;
+                return { diferenciaLiquido, porcentajeLiquido, diferenciaTotal, porcentajeTotal };
+            }, [historialMensual]);
+
+            const cdtsOrdenados = useMemo(() =>
+                [...cdts].sort((a, b) => new Date(a.fechaVencimiento) - new Date(b.fechaVencimiento)),
+                [cdts]);
+
+            const formatCurrency = (num, moneda = 'COP') => {
+                if (hideAmounts) return '••••••';
+                return new Intl.NumberFormat('es-CO', { style: 'currency', currency: moneda, minimumFractionDigits: 0 }).format(num || 0);
+            };
+
+            const formatDate = (date) => {
+                if (!date) return '—';
+                const [year, month, day] = date.split('-');
+                return new Date(year, month - 1, day).toLocaleDateString('es-CO');
+            };
+
+            const calcularVencimientoTC = (diaCorte, diasGracia) => {
+                const hoy = new Date();
+                const año = hoy.getFullYear();
+                const mes = hoy.getMonth();
+                
+                // Crear fecha de corte de este mes
+                let fechaCorte = new Date(año, mes, diaCorte);
+                
+                // Si el corte ya pasó, usar el próximo mes
+                if (fechaCorte < hoy) {
+                    fechaCorte = new Date(año, mes + 1, diaCorte);
+                }
+                
+                // Agregar días de gracia
+                let fechaVencimiento = new Date(fechaCorte);
+                fechaVencimiento.setDate(fechaVencimiento.getDate() + diasGracia);
+                
+                // Ajustar si cae en fin de semana o festivo
+                const festivos = [
+                    new Date(año, 0, 1), // Año Nuevo
+                    new Date(año, 4, 1), // Día del Trabajo
+                    new Date(año, 6, 20), // Independencia
+                    new Date(año, 7, 7), // Batalla de Boyacá
+                    new Date(año, 11, 25), // Navidad
+                ];
+                
+                while (fechaVencimiento.getDay() === 0 || fechaVencimiento.getDay() === 6 || 
+                       festivos.some(f => f.toDateString() === fechaVencimiento.toDateString())) {
+                    // Si es fin de semana o festivo, pasar al lunes siguiente
+                    if (fechaVencimiento.getDay() === 0 || fechaVencimiento.getDay() === 6) {
+                        const diasAlunes = (1 - fechaVencimiento.getDay() + 7) % 7 || 1;
+                        fechaVencimiento.setDate(fechaVencimiento.getDate() + diasAlunes);
+                    } else {
+                        fechaVencimiento.setDate(fechaVencimiento.getDate() + 1);
+                    }
+                }
+                
+                const year = fechaVencimiento.getFullYear();
+                const month = String(fechaVencimiento.getMonth() + 1).padStart(2, '0');
+                const day = String(fechaVencimiento.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+
+            const calcularSemaforoTC = (fechaLimite) => {
+                const hoy = new Date();
+                const [year, month, day] = fechaLimite.split('-');
+                const fecha = new Date(year, month - 1, day);
+                const diasRestantes = Math.ceil((fecha - hoy) / (1000 * 60 * 60 * 24));
+                
+                if (diasRestantes <= 3) return { color: '#8b0000', label: 'CRÍTICO', dias: diasRestantes };
+                if (diasRestantes <= 15) return { color: '#ef4444', label: 'URGENTE', dias: diasRestantes };
+                if (diasRestantes <= 30) return { color: '#f97316', label: 'PRÓXIMO', dias: diasRestantes };
+                if (diasRestantes <= 45) return { color: '#eab308', label: 'ATENCIÓN', dias: diasRestantes };
+                return { color: '#10b981', label: 'TRANQUILO', dias: diasRestantes };
+            };
+
+            const cdtVencimientoBadge = (cdt) => {
+                const diasFaltantes = Math.ceil((new Date(cdt.fechaVencimiento) - new Date()) / (1000 * 60 * 60 * 24));
+                if (diasFaltantes <= 0) return <span className="badge danger">Vencido</span>;
+                if (diasFaltantes <= 7) return <span className="badge warning">Vence en {diasFaltantes}d</span>;
+                return <span className="badge">Vence en {diasFaltantes}d</span>;
+            };
+
+            const smmlvBadge = (principal) => {
+                if (Number(principal) >= UMBRAL_SMMLV) {
+                    return <span className="badge warning" title="Por encima del umbral de referencia SMMLV">Sobre umbral SMMLV</span>;
+                }
+                return null;
+            };
+
+            const calcularProgresoCdt = (fechaCreacion, fechaVencimiento) => {
+                const inicio = new Date(fechaCreacion);
+                const fin = new Date(fechaVencimiento);
+                const hoy = new Date();
+                const duracionTotal = fin - inicio;
+                const transcurrido = hoy - inicio;
+                const porcentaje = duracionTotal > 0 ? Math.min(100, Math.max(0, (transcurrido / duracionTotal) * 100)) : 100;
+                const diasRestantes = Math.max(0, Math.ceil((fin - hoy) / (1000 * 60 * 60 * 24)));
+                return { porcentaje, diasRestantes };
+            };
+
+            // Backup automático semanal
+            useEffect(() => {
+                const today = new Date().toISOString().slice(0, 10);
+                const lastBackup = lastBackupDate || '';
+                const daysSinceBackup = lastBackup ? Math.floor((new Date(today) - new Date(lastBackup)) / (1000 * 60 * 60 * 24)) : 999;
+                
+                if (daysSinceBackup >= 7) {
+                    handleExport();
+                    setLastBackupDate(today);
+                }
+            }, []);
+
+            // Actualizar historial mensual
+            useEffect(() => {
+                const hoyMes = new Date().toISOString().slice(0, 7); // YYYY-MM
+                const ultimoRegistro = historialMensual[historialMensual.length - 1];
+                if (!ultimoRegistro || ultimoRegistro.mes !== hoyMes) {
+                    const nuevoRegistro = {
+                        mes: hoyMes,
+                        liquido: totalSeccion1,
+                        total: totalSeccion2
+                    };
+                    setHistorialMensual([...historialMensual, nuevoRegistro]);
+                }
+            }, [totalSeccion1, totalSeccion2]);
+
+            return (
+                <div className="container">
+                    <div className="header">
+                        <div className="header-actions" style={{ marginLeft: 'auto' }}>
+                            <button className="btn-secondary icon-btn" onClick={handleExport} title="Exportar">🔽</button>
+                            <button className="btn-secondary icon-btn" onClick={handleImportClick} title="Importar">🔼</button>
+                            <input type="file" accept="application/json" ref={fileInputRef} onChange={handleImportFile} style={{ display: 'none' }} />
+                            <button className="btn-secondary icon-btn" onClick={() => setHideAmounts(!hideAmounts)} title={hideAmounts ? 'Mostrar montos' : 'Ocultar montos'}>
+                                {hideAmounts ? '👁️' : '👁️'}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="tabs">
+                        <button className={`tab ${tab === 'home' ? 'active' : ''}`} onClick={() => setTab('home')}>Home</button>
+                        <button className={`tab ${tab === 'deudas' ? 'active' : ''}`} onClick={() => setTab('deudas')}>TC</button>
+                        <button className={`tab ${tab === 'cuentas' ? 'active' : ''}`} onClick={() => setTab('cuentas')}>Cuentas</button>
+                        <button className={`tab ${tab === 'cdts' ? 'active' : ''}`} onClick={() => setTab('cdts')}>CDTs</button>
+                        <button className={`tab ${tab === 'fondos' ? 'active' : ''}`} onClick={() => setTab('fondos')}>Otros</button>
+                    </div>
+
+                    {tab === 'home' && (
+                        <div>
+                            {/* SECCIÓN AGREGAR GASTO - BOTÓN GRANDE */}
+                            <div className="card" style={{ marginBottom: '1rem', padding: '2rem 1.5rem', textAlign: 'center' }}>
+                                <div style={{ marginBottom: '1rem' }}>
+                                    <p style={{ color: '#94a3b8', marginBottom: '1.5rem', fontSize: '0.95rem' }}>Registra un gasto del día</p>
+                                    <button onClick={() => { setGastoForm(getEmptyGastoForm()); setEditingGastoId(null); setShowGastoModal(true); }} 
+                                        style={{ width: '100%', padding: '1.2rem', fontSize: '1.1rem', fontWeight: '600', background: '#10b981', color: '#fff', border: 'none', borderRadius: '0.75rem', cursor: 'pointer', marginBottom: '1rem' }}>
+                                        + Agregar Gasto
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* SECCIÓN RESUMEN HOYESTE MES + RECIENTES */}
+                            <div className="card" style={{ marginBottom: '1rem', padding: '0', overflow: 'hidden' }}>
+                                {/* RESUMEN HOYESTE MES */}
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0, borderTop: '2px solid #334155' }}>
+                                    <div style={{ padding: '1.25rem', textAlign: 'center', borderRight: '1px solid #334155' }}>
+                                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.5rem', fontWeight: '500' }}>Hoy</div>
+                                        <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#10b981' }}>
+                                            {formatCurrency(totalGastadoHoy)}
+                                        </div>
+                                    </div>
+                                    <div style={{ padding: '1.25rem', textAlign: 'center' }}>
+                                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.5rem', fontWeight: '500' }}>Este Mes</div>
+                                        <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#06b6d4' }}>
+                                            {formatCurrency(totalGastadoMes)}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* RECIENTES */}
+                                <div style={{ padding: '1.5rem', borderTop: '1px solid #334155' }}>
+                                    <h3 style={{ marginTop: 0, marginBottom: '1rem', fontSize: '1.1rem' }}>Recientes</h3>
+                                    <input type="text" placeholder="🔍 Buscar gasto..." value={searchGasto}
+                                        onChange={(e) => setSearchGasto(e.target.value)}
+                                        style={{ width: '100%', padding: '0.7rem', marginBottom: '1rem', background: '#1e293b', color: '#e2e8f0', border: '1px solid #475569', borderRadius: '0.75rem', fontSize: '0.9rem' }} />
+                                    {gastosOrdenados.length === 0 ? (
+                                        <div className="empty" style={{ fontSize: '0.9rem' }}>Sin gastos aún</div>
+                                    ) : (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxHeight: '400px', overflowY: 'auto', paddingRight: '0.5rem' }}>
+                                            {gastosOrdenados.filter(g => g.descripcion.toLowerCase().includes(searchGasto.toLowerCase()) || (g.categoria && g.categoria.toLowerCase().includes(searchGasto.toLowerCase()))).slice(0, 20).map((g) => (
+                                                <div key={g.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.6rem 0', borderBottom: '1px solid #1e293b' }}>
+                                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                                        <div style={{ fontSize: '0.9rem', fontWeight: '600', color: '#e2e8f0' }}>
+                                                            {g.descripcion}
+                                                        </div>
+                                                        <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '0.2rem' }}>
+                                                            {formatDate(g.fecha)} • {g.metodo === 'tarjeta' ? g.tarjeta : (g.metodo === 'efectivo' ? 'Efectivo' : 'Cuenta')} {g.categoria ? `• ${g.categoria}` : ''}
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', marginLeft: '0.75rem', flexShrink: 0 }}>
+                                                        <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#10b981', minWidth: '70px', textAlign: 'right' }}>
+                                                            {formatCurrency(Number(g.monto))}
+                                                        </span>
+                                                        <button onClick={() => handleEditGasto(g)} style={{ padding: '0.3rem 0.4rem', fontSize: '0.65rem', minWidth: '40px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '0.4rem', cursor: 'pointer' }}>✎</button>
+                                                        <button onClick={() => handleDeleteGasto(g.id)} style={{ padding: '0.3rem 0.4rem', fontSize: '0.65rem', minWidth: '40px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '0.4rem', cursor: 'pointer' }}>✕</button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* SECCIÓN LÍQUIDO + TOTAL - COMPACTA */}
+                            <div className="card" style={{ marginBottom: '1.5rem', padding: '1rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                    {/* Líquido */}
+                                    <div style={{ background: 'rgba(59, 130, 246, 0.1)', borderLeft: '3px solid #3b82f6', padding: '0.75rem', borderRadius: '0.5rem' }}>
+                                        <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: '500' }}>Líquido</div>
+                                        <div style={{ fontSize: '1.3rem', fontWeight: '700', color: '#10b981', marginBottom: '0.6rem' }}>
+                                            {formatCurrency(totalSeccion1)}
+                                        </div>
+                                        <div style={{ fontSize: '0.7rem' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                                                <span style={{ color: '#94a3b8' }}>CDTs</span>
+                                                <span style={{ color: '#3b82f6', fontWeight: '600' }}>{formatCurrency(totalCdtsSaldo)}</span>
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                                                <span style={{ color: '#94a3b8' }}>Cuentas</span>
+                                                <span style={{ color: '#10b981', fontWeight: '600' }}>{formatCurrency(totalCuentas)}</span>
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                                                <span style={{ color: '#94a3b8' }}>Rendim. Diario</span>
+                                                <span style={{ color: '#10b981', fontWeight: '600' }}>
+                                                    {rendimientoDiarioEstimado !== null ? `+${formatCurrency(rendimientoDiarioEstimado)}` : 'N/A'}
+                                                </span>
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem', paddingTop: '0.25rem', borderTop: '1px solid #334155' }}>
+                                                <span style={{ color: '#94a3b8' }}>Tasa Prom.</span>
+                                                <span style={{ color: '#a855f7', fontWeight: '600' }}>
+                                                    {tasaPromedioPonderada !== null ? `${tasaPromedioPonderada.toFixed(2)}% EA` : 'N/A'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Total */}
+                                    <div style={{ background: 'rgba(168, 85, 247, 0.1)', borderLeft: '3px solid #a855f7', padding: '0.75rem', borderRadius: '0.5rem' }}>
+                                        <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: '500' }}>Total</div>
+                                        <div style={{ fontSize: '1.3rem', fontWeight: '700', color: '#a855f7', marginBottom: '0.6rem' }}>
+                                            {formatCurrency(totalSeccion2)}
+                                        </div>
+                                        <div style={{ fontSize: '0.7rem' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                                                <span style={{ color: '#94a3b8' }}>Líquido</span>
+                                                <span style={{ color: '#3b82f6', fontWeight: '600' }}>{formatCurrency(totalSeccion1)}</span>
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                                                <span style={{ color: '#94a3b8' }}>FPV</span>
+                                                <span style={{ color: '#f97316', fontWeight: '600' }}>{formatCurrency(fondos.fpv)}</span>
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                                                <span style={{ color: '#94a3b8' }}>FPO</span>
+                                                <span style={{ color: '#a855f7', fontWeight: '600' }}>{formatCurrency(fondos.pensionObligatoria)}</span>
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                                                <span style={{ color: '#94a3b8' }}>Cesantías</span>
+                                                <span style={{ color: '#a855f7', fontWeight: '600' }}>{formatCurrency(fondos.cesantias)}</span>
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                                                <span style={{ color: '#94a3b8' }}>Otros</span>
+                                                <span style={{ color: '#f97316', fontWeight: '600' }}>{formatCurrency(totalOtrosEnCOP)}</span>
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem', paddingTop: '0.25rem', borderTop: '1px solid #334155' }}>
+                                                <span style={{ color: '#94a3b8' }}>Deudas TC</span>
+                                                <span style={{ color: '#ef4444', fontWeight: '600' }}>-{formatCurrency(totalDeudaTC)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* ANÁLISIS DE CATEGORÍAS */}
+                            <div className="card">
+                                <h2>Análisis de Gastos por Categoría</h2>
+                                {(() => {
+                                    const gastosPorCategoria = {};
+                                    const hoyDate = new Date();
+                                    const mesActual = hoyDate.getFullYear() + '-' + String(hoyDate.getMonth() + 1).padStart(2, '0');
+                                    
+                                    gastosOrdenados.forEach(g => {
+                                        const gastoMes = g.fecha.slice(0, 7);
+                                        if (gastoMes === mesActual) {
+                                            const cat = g.categoria || 'Sin categoría';
+                                            gastosPorCategoria[cat] = (gastosPorCategoria[cat] || 0) + Number(g.monto);
+                                        }
+                                    });
+
+                                    const totalGastosCategorizados = Object.values(gastosPorCategoria).reduce((a, b) => a + b, 0);
+                                    const categoriasOrdenadas = Object.entries(gastosPorCategoria).sort((a, b) => b[1] - a[1]);
+
+                                    return (
+                                        <>
+                                            {Object.keys(gastosPorCategoria).length === 0 ? (
+                                                <p className="empty">Sin gastos categorizados este mes</p>
+                                            ) : (
+                                                <>
+                                                    <div style={{ marginBottom: '1.5rem' }}>
+                                                        {categoriasOrdenadas.map(([cat, monto]) => {
+                                                            const porcentaje = (monto / totalGastosCategorizados) * 100;
+                                                            const colores = { 'Mercado': '#10b981', 'Transporte': '#3b82f6', 'Ocio': '#a855f7', 'Servicios': '#f97316', 'Salidas Familia': '#06b6d4', 'Sin categoría': '#64748b' };
+                                                            return (
+                                                                <div key={cat} style={{ marginBottom: '1rem' }}>
+                                                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.3rem' }}>
+                                                                        <span style={{ fontSize: '0.9rem', fontWeight: '600' }}>{cat}</span>
+                                                                        <span style={{ fontSize: '0.9rem', color: colores[cat] || '#94a3b8', fontWeight: '700' }}>
+                                                                            {formatCurrency(monto)} ({porcentaje.toFixed(1)}%)
+                                                                        </span>
+                                                                    </div>
+                                                                    <div style={{ height: '8px', background: 'rgba(100,116,139,0.2)', borderRadius: '4px', overflow: 'hidden' }}>
+                                                                        <div style={{ height: '100%', background: colores[cat] || '#64748b', width: `${porcentaje}%`, transition: 'width 0.3s' }}></div>
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+
+                                                    <div style={{ paddingTop: '1rem', borderTop: '1px solid #334155', marginTop: '1.5rem' }}>
+                                                        <p style={{ fontSize: '0.9rem', color: '#94a3b8', marginBottom: '0.5rem' }}>Promedio mensual por categoría:</p>
+                                                        {(() => {
+                                                            const gastosUltimos12Meses = [];
+                                                            for (let i = 0; i < 12; i++) {
+                                                                const fecha = new Date(hoyDate.getFullYear(), hoyDate.getMonth() - i, 1);
+                                                                const mes = fecha.getFullYear() + '-' + String(fecha.getMonth() + 1).padStart(2, '0');
+                                                                gastosUltimos12Meses.push(mes);
+                                                            }
+                                                            
+                                                            const promedios = {};
+                                                            CATEGORIAS_GASTOS.forEach(cat => {
+                                                                const totalCat = gastosOrdenados.filter(g => (g.categoria || 'Sin categoría') === cat && gastosUltimos12Meses.includes(g.fecha.slice(0, 7))).reduce((a, b) => a + Number(b.monto), 0);
+                                                                promedios[cat] = Math.round(totalCat / 12);
+                                                            });
+
+                                                            return CATEGORIAS_GASTOS.map(cat => (
+                                                                <div key={cat} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', padding: '0.35rem 0', borderBottom: '1px solid #1e293b' }}>
+                                                                    <span>{cat}</span>
+                                                                    <span style={{ fontWeight: '600' }}>{formatCurrency(promedios[cat])}/mes</span>
+                                                                </div>
+                                                            ));
+                                                        })()}
+                                                    </div>
+                                                </>
+                                            )}
+                                        </>
+                                    );
+                                })()}
+                            </div>
+
+                            <div className="card">
+                                <h2>Historial</h2>
+
+                                <h3 style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: '0.5rem', marginBottom: '0.5rem' }}>Diario — Líquido</h3>
+                                <div className="grid-2" style={{ marginBottom: '1.25rem' }}>
+                                    <div className="mini-stat">
+                                        <p>Líquido (hoy)</p>
+                                        <div className="value">{formatCurrency(totalSeccion1)}</div>
+                                    </div>
+                                    <div className="mini-stat">
+                                        <p>Vs. día anterior</p>
+                                        {variacionDiaria ? (
+                                            <div className="value" style={{ color: variacionDiaria.diferencia >= 0 ? '#10b981' : '#ef4444' }}>
+                                                {variacionDiaria.diferencia >= 0 ? '+' : ''}{formatCurrency(variacionDiaria.diferencia)} ({variacionDiaria.porcentaje >= 0 ? '+' : ''}{variacionDiaria.porcentaje.toFixed(2)}%)
+                                            </div>
+                                        ) : <div className="value" style={{ color: '#94a3b8' }}>Sin datos aún</div>}
+                                    </div>
+                                </div>
+
+                                <h3 style={{ fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.5rem' }}>Semanal — Líquido (últimos 7 días)</h3>
+                                <div className="grid-2" style={{ marginBottom: '1.25rem' }}>
+                                    <div className="mini-stat">
+                                        <p>Variación</p>
+                                        {variacion7Dias ? (
+                                            <div className="value" style={{ color: variacion7Dias.diferencia >= 0 ? '#10b981' : '#ef4444' }}>
+                                                {variacion7Dias.diferencia >= 0 ? '+' : ''}{formatCurrency(variacion7Dias.diferencia)} ({variacion7Dias.porcentaje >= 0 ? '+' : ''}{variacion7Dias.porcentaje.toFixed(2)}%)
+                                            </div>
+                                        ) : <div className="value" style={{ color: '#94a3b8' }}>Necesitas más días</div>}
+                                    </div>
+                                    <div className="mini-stat">
+                                        <p>Días registrados</p>
+                                        <div className="value">{historial.length}</div>
+                                    </div>
+                                </div>
+
+                                <h3 style={{ fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.5rem' }}>Mensual — Líquido y Total <span style={{ fontWeight: 400 }}>(al guardar tu actualización de FPV/Pensión/Cesantías)</span></h3>
+                                <div className="grid-3" style={{ marginBottom: '1rem' }}>
+                                    <div className="mini-stat">
+                                        <p>Líquido — Vs. mes anterior</p>
+                                        <div className="value">{formatCurrency(totalSeccion1)}</div>
+                                        {variacionMensual ? (
+                                            <div style={{ fontSize: '0.8rem', color: variacionMensual.diferenciaLiquido >= 0 ? '#10b981' : '#ef4444' }}>
+                                                {variacionMensual.diferenciaLiquido >= 0 ? '+' : ''}{formatCurrency(variacionMensual.diferenciaLiquido)} ({variacionMensual.porcentajeLiquido >= 0 ? '+' : ''}{variacionMensual.porcentajeLiquido.toFixed(2)}%)
+                                            </div>
+                                        ) : <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Sin datos aún</div>}
+                                    </div>
+                                    <div className="mini-stat">
+                                        <p>Total — Vs. mes anterior</p>
+                                        <div className="value">{formatCurrency(totalSeccion2)}</div>
+                                        {variacionMensual ? (
+                                            <div style={{ fontSize: '0.8rem', color: variacionMensual.diferenciaTotal >= 0 ? '#10b981' : '#ef4444' }}>
+                                                {variacionMensual.diferenciaTotal >= 0 ? '+' : ''}{formatCurrency(variacionMensual.diferenciaTotal)} ({variacionMensual.porcentajeTotal >= 0 ? '+' : ''}{variacionMensual.porcentajeTotal.toFixed(2)}%)
+                                            </div>
+                                        ) : <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Sin datos aún</div>}
+                                    </div>
+                                    <div className="mini-stat">
+                                        <p>Meses registrados</p>
+                                        <div className="value">{historialMensual.length}</div>
+                                    </div>
+                                </div>
+
+                                {ultimos7Dias.length > 0 && (
+                                    <>
+                                        <h3 style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '1rem', marginBottom: '0.5rem' }}>Detalle diario (últimos 7 días)</h3>
+                                        <div className="item-list" style={{ maxHeight: '250px', overflowY: 'auto', paddingRight: '0.5rem' }}>
+                                            {[...ultimos7Dias].reverse().map((h, idx, arr) => {
+                                                const anterior = arr[idx + 1];
+                                                const diff = anterior ? h.total - anterior.total : null;
+                                                return (
+                                                    <div key={h.fecha} className="item-header" style={{ padding: '0.5rem 0', borderBottom: '1px solid #334155' }}>
+                                                        <span className="item-meta">{formatDate(h.fecha)}</span>
+                                                        <span>
+                                                            {formatCurrency(h.total)}
+                                                            {diff !== null && (
+                                                                <span style={{ marginLeft: '0.5rem', color: diff >= 0 ? '#10b981' : '#ef4444', fontSize: '0.8rem' }}>
+                                                                    {diff >= 0 ? '+' : ''}{formatCurrency(diff)}
+                                                                </span>
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </>
+                                )}
+
+                                {historialMensual.length > 0 && (
+                                    <>
+                                        <h3 style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '1.25rem', marginBottom: '0.5rem' }}>Detalle mensual</h3>
+                                        <div className="item-list" style={{ maxHeight: '250px', overflowY: 'auto', paddingRight: '0.5rem' }}>
+                                            {[...historialMensual].reverse().map((h, idx, arr) => {
+                                                const anterior = arr[idx + 1];
+                                                const diffLiquido = anterior ? h.liquido - anterior.liquido : null;
+                                                const diffTotal = anterior ? h.total - anterior.total : null;
+                                                return (
+                                                    <div key={h.mes} className="item-header" style={{ padding: '0.75rem 0', borderBottom: '1px solid #334155' }}>
+                                                        <div style={{ flex: 1 }}>
+                                                            <span className="item-meta" style={{ display: 'block', marginBottom: '0.25rem' }}>{h.mes}</span>
+                                                            <div style={{ fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between' }}>
+                                                                <span>Líquido: {formatCurrency(h.liquido)}</span>
+                                                                {diffLiquido !== null && (
+                                                                    <span style={{ color: diffLiquido >= 0 ? '#10b981' : '#ef4444', fontWeight: '600' }}>
+                                                                        {diffLiquido >= 0 ? '+' : ''}{formatCurrency(diffLiquido)}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <div style={{ fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between', marginTop: '0.1rem' }}>
+                                                                <span>Total: {formatCurrency(h.total)}</span>
+                                                                {diffTotal !== null && (
+                                                                    <span style={{ color: diffTotal >= 0 ? '#10b981' : '#ef4444', fontWeight: '600' }}>
+                                                                        {diffTotal >= 0 ? '+' : ''}{formatCurrency(diffTotal)}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+
+                            {cdtsOrdenados.some(c => Math.ceil((new Date(c.fechaVencimiento) - new Date()) / 86400000) <= 7) && (
+                                <div className="card" style={{ borderColor: '#f97316' }}>
+                                    <h2 style={{ color: '#fdba74' }}>⚠ CDTs por vencer pronto</h2>
+                                    <div className="item-list" style={{ maxHeight: '200px' }}>
+                                        {cdtsOrdenados.filter(c => Math.ceil((new Date(c.fechaVencimiento) - new Date()) / 86400000) <= 7).map(c => (
+                                            <div key={c.id} className="item-header">
+                                                <span>{c.nombre} ({c.plataforma})</span>
+                                                {cdtVencimientoBadge(c)}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {tab === 'cdts' && (
+                        <div className="card">
+                            <div className="section-title-row">
+                                <h2>CDTs ({cdts.length})</h2>
+                                <button onClick={() => { setShowCdtModal(true); setEditingCdtId(null); setCdtForm(emptyCdtForm); }} style={{ padding: '0.85rem 1.5rem', fontSize: '1rem', fontWeight: '600', borderRadius: '0.75rem', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer' }}>+ Añadir CDT</button>
+                            </div>
+
+                            <div className="grid-compact" style={{ marginBottom: '1.5rem' }}>
+                                <div className="mini-stat compact">
+                                    <p>Inicial</p>
+                                    <div className="value" style={{ color: '#3b82f6' }}>{formatCurrency(totalCdtsPrincipal)}</div>
+                                </div>
+                                <div className="mini-stat compact">
+                                    <p>Acumulado</p>
+                                    <div className="value" style={{ color: '#10b981' }}>{formatCurrency(totalCdtsInteres)}</div>
+                                </div>
+                                <div className="mini-stat compact">
+                                    <p>Tasa Promedio</p>
+                                    <div className="value" style={{ color: '#a855f7' }}>{tasaPromedioCdts !== null ? `${tasaPromedioCdts.toFixed(2)}% EA` : 'N/A'}</div>
+                                </div>
+                                <div className="mini-stat compact">
+                                    <p>Total Hoy</p>
+                                    <div className="value" style={{ color: '#06b6d4' }}>{formatCurrency(totalCdtsInteres + totalCdtsPrincipal)}</div>
+                                </div>
+                            </div>
+
+                            {cdtsOrdenados.length === 0 ? (
+                                <div className="empty">No hay CDTs registrados</div>
+                            ) : (
+                                <div className="item-list">
+                                    {cdtsOrdenados.map((cdt) => {
+                                        const { saldoActual, interesTotal, interesDiario, diasTranscurridos } = calcularInteres(
+                                            Number(cdt.principal), Number(cdt.tasa), cdt.fechaCreacion
+                                        );
+                                        const { porcentaje, diasRestantes } = calcularProgresoCdt(cdt.fechaCreacion, cdt.fechaVencimiento);
+                                        const claseColor = diasRestantes <= 7 ? 'danger' : diasRestantes <= 30 ? 'warning' : '';
+                                        // Calcular días totales desde creación hasta vencimiento
+                                        const fechaCreacionDate = new Date(cdt.fechaCreacion);
+                                        const fechaVencimientoDate = new Date(cdt.fechaVencimiento);
+                                        const diasTotales = Math.round((fechaVencimientoDate - fechaCreacionDate) / (1000 * 60 * 60 * 24));
+                                        // Interés total esperado al vencimiento
+                                        const interesFinal = Number(cdt.principal) * (Number(cdt.tasa) / 100) * (diasTotales / 365);
+                                        const finalEsperado = Number(cdt.principal) + interesFinal;
+                                        return (
+                                            <div key={cdt.id} className="item-row" style={{ position: 'relative' }}>
+                                                <div className="item-header" style={{ alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                                                    <div style={{ flex: 1 }}>
+                                                        <div className="item-name">{cdt.nombre}</div>
+                                                        <div className="item-meta" style={{ fontSize: '0.75rem' }}>
+                                                            {cdt.plataforma || 'Sin plataforma'} • Creado {formatDate(cdt.fechaCreacion)} • Vence {formatDate(cdt.fechaVencimiento)}
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ display: 'flex', gap: '0.2rem', alignItems: 'flex-start', flexShrink: 0 }}>
+                                                        <button onClick={() => {
+                                                            const menu = document.getElementById(`menu-cdt-${cdt.id}`);
+                                                            menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
+                                                        }} style={{ width: '35px', padding: '0.25rem', background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1rem' }}>⋮</button>
+                                                        <div id={`menu-cdt-${cdt.id}`} style={{ display: 'none', position: 'absolute', flexDirection: 'column', background: '#1e293b', border: '1px solid #334155', borderRadius: '0.5rem', zIndex: 10, minWidth: '110px', top: '1.5rem', right: 0 }}>
+                                                            <button onClick={() => { handleEditCdt(cdt); document.getElementById(`menu-cdt-${cdt.id}`).style.display = 'none'; }} style={{ textAlign: 'left', padding: '0.4rem 0.8rem', border: 'none', background: 'transparent', color: '#e2e8f0', borderRadius: '0.5rem 0.5rem 0 0', cursor: 'pointer', fontSize: '0.85rem' }}>Editar</button>
+                                                            <button onClick={() => { handleDeleteCdt(cdt.id); document.getElementById(`menu-cdt-${cdt.id}`).style.display = 'none'; }} style={{ textAlign: 'left', padding: '0.4rem 0.8rem', border: 'none', background: 'transparent', color: '#ef4444', borderRadius: '0 0 0.5rem 0.5rem', cursor: 'pointer', fontSize: '0.85rem' }}>Eliminar</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                                                    <div style={{ textAlign: 'center', padding: '0.5rem', background: 'rgba(16,185,129,0.1)', borderRadius: '0.5rem' }}>
+                                                        <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginBottom: '0.1rem', fontWeight: '500' }}>Inicial</div>
+                                                        <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#10b981' }}>{formatCurrency(Number(cdt.principal))}</div>
+                                                    </div>
+                                                    <div style={{ textAlign: 'center', padding: '0.5rem', background: 'rgba(168,85,247,0.1)', borderRadius: '0.5rem' }}>
+                                                        <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginBottom: '0.1rem', fontWeight: '500' }}>Tasa</div>
+                                                        <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#a855f7' }}>{cdt.tasa}% EA</div>
+                                                    </div>
+                                                    <div style={{ textAlign: 'center', padding: '0.5rem', background: 'rgba(59,130,246,0.1)', borderRadius: '0.5rem' }}>
+                                                        <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginBottom: '0.1rem', fontWeight: '500' }}>Final (Vto.)</div>
+                                                        <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#3b82f6' }}>{formatCurrency(finalEsperado)}</div>
+                                                    </div>
+                                                </div>
+                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                                                    <div style={{ textAlign: 'center' }}>
+                                                        <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Hoy</div>
+                                                        <div style={{ fontSize: '0.95rem', fontWeight: '600', color: '#06b6d4' }}>{formatCurrency(saldoActual)}</div>
+                                                    </div>
+                                                    <div style={{ textAlign: 'center' }}>
+                                                        <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Int. Diario</div>
+                                                        <div style={{ fontSize: '0.95rem', fontWeight: '600', color: '#f97316' }}>{formatCurrency(interesDiario)}</div>
+                                                    </div>
+                                                    <div style={{ textAlign: 'center' }}>
+                                                        <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Progreso</div>
+                                                        <div style={{ fontSize: '0.95rem', fontWeight: '600', color: '#e2e8f0' }}>{diasTranscurridos}d / {diasRestantes > 0 ? `${diasRestantes}d` : 'Vencido'}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="progress-track" style={{ height: '6px' }}>
+                                                    <div className={`progress-fill ${claseColor}`} style={{ width: `${porcentaje}%`, height: '100%' }}></div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {tab === 'cuentas' && (
+                        <div>
+                            <div className="card" style={{ marginBottom: '1.5rem' }}>
+                                <div className="section-title-row">
+                                    <h2>Cuentas ({cuentas.length})</h2>
+                                    <button onClick={() => { setShowCuentaModal(true); setEditingCuentaId(null); setCuentaForm(emptyCuentaForm); }} style={{ padding: '0.85rem 1.5rem', fontSize: '1rem', fontWeight: '600', borderRadius: '0.75rem', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer' }}>+ Añadir Cuenta</button>
+                                </div>
+
+                                <div className="grid-compact">
+                                    <div className="mini-stat compact">
+                                        <p>Total</p>
+                                        <div className="value" style={{ color: '#10b981' }}>{formatCurrency(totalCuentas)}</div>
+                                    </div>
+                                    <div className="mini-stat compact">
+                                        <p>Tasa Promedio</p>
+                                        <div className="value" style={{ color: '#a855f7' }}>{tasaPromedioCuentas !== null ? `${tasaPromedioCuentas.toFixed(2)}% EA` : 'N/A'}</div>
+                                    </div>
+                                    <div className="mini-stat compact">
+                                        <p>Rendim. Diario Est.</p>
+                                        <div className="value" style={{ color: '#10b981' }}>
+                                            {tasaPromedioCuentas && totalCuentas ? `+${formatCurrency((totalCuentas * (tasaPromedioCuentas / 100)) / 365)}` : 'N/A'}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="card">
+
+                            {cuentas.length === 0 ? (
+                                <div className="empty">No hay cuentas registradas. Añade tus cuentas de ahorro de alto rendimiento (Nu, Daviplata, etc.) y actualiza el saldo cuando quieras.</div>
+                            ) : (
+                                <div className="item-list">
+                                    {[...cuentas].sort((a, b) => Number(b.saldo) - Number(a.saldo)).map((c) => (
+                                        <div key={c.id} className="item-row" style={{ position: 'relative' }}>
+                                            <div className="item-header">
+                                                <div>
+                                                    <div className="item-name">{c.nombre}</div>
+                                                    <div className="item-meta">{c.plataforma} • {c.tipo}{c.tasa ? ` • ${c.tasa}% EA` : ''}</div>
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                    <button onClick={() => setCuentaFavoritaId(String(c.id))} style={{ background: 'transparent', border: 'none', fontSize: '1.25rem', cursor: 'pointer', padding: '0.25rem' }}>
+                                                        {cuentaFavoritaId === String(c.id) ? '⭐' : '☆'}
+                                                    </button>
+                                                    <button onClick={() => {
+                                                        const menu = document.getElementById(`menu-cuenta-${c.id}`);
+                                                        menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
+                                                    }} style={{ width: '45px', padding: '0.5rem', background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>⋮</button>
+                                                    <div id={`menu-cuenta-${c.id}`} style={{ display: 'none', position: 'absolute', flexDirection: 'column', background: '#1e293b', border: '1px solid #334155', borderRadius: '0.5rem', zIndex: 10, minWidth: '140px', top: '2rem', right: 0 }}>
+                                                        <button onClick={() => { handleEditCuenta(c); document.getElementById(`menu-cuenta-${c.id}`).style.display = 'none'; }} style={{ textAlign: 'left', padding: '0.5rem 1rem', border: 'none', background: 'transparent', color: '#e2e8f0', borderRadius: '0.5rem 0.5rem 0 0', cursor: 'pointer' }}>Editar saldo</button>
+                                                        <button onClick={() => { handleDeleteCuenta(c.id); document.getElementById(`menu-cuenta-${c.id}`).style.display = 'none'; }} style={{ textAlign: 'left', padding: '0.5rem 1rem', border: 'none', background: 'transparent', color: '#ef4444', borderRadius: '0 0 0.5rem 0.5rem', cursor: 'pointer' }}>Eliminar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="item-data">
+                                                <div className="item-data-item">
+                                                    <p>Saldo</p>
+                                                    <div className="value primary">{formatCurrency(Number(c.saldo))}</div>
+                                                </div>
+                                                {c.tasa && (
+                                                    <div className="item-data-item">
+                                                        <p>Tasa E.A.</p>
+                                                        <div className="value orange">{c.tasa}% EA</div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            </div>
+                        </div>
+                    )}
+
+                    {tab === 'fondos' && (
+                        <div>
+                            <div className="card update-section">
+                                <h3>Actualiza</h3>
+                                <div className="input-grid">
+                                    <div>
+                                        <label className="field-label">FPV</label>
+                                        <input type="number" value={fondos.fpv} onChange={(e) => setFondos({ ...fondos, fpv: Number(e.target.value) })} />
+                                    </div>
+                                    <div>
+                                        <label className="field-label">FPO</label>
+                                        <input type="number" value={fondos.pensionObligatoria} onChange={(e) => setFondos({ ...fondos, pensionObligatoria: Number(e.target.value) })} />
+                                    </div>
+                                    <div>
+                                        <label className="field-label">Cesantías</label>
+                                        <input type="number" value={fondos.cesantias} onChange={(e) => setFondos({ ...fondos, cesantias: Number(e.target.value) })} />
+                                    </div>
+                                    <div>
+                                        <label className="field-label">Total (informativo)</label>
+                                        <div style={{ padding: '0.75rem 1rem', borderRadius: '0.6rem', background: '#1e293b', border: '1px dashed #475569', color: '#10b981', fontWeight: '700', opacity: 0.85, cursor: 'not-allowed' }}>
+                                            {formatCurrency(Number(fondos.fpv || 0) + Number(fondos.pensionObligatoria || 0) + Number(fondos.cesantias || 0))}
+                                        </div>
+                                    </div>
+                                </div>
+                                <button style={{ marginTop: '1rem' }} onClick={handleSaveFondos}>Guardar</button>
+                                <p className="hint" style={{ marginTop: '0.75rem' }}>
+                                    {fondosFecha ? `FPV/Pensión/Cesantías actualizado: ${formatDate(fondosFecha)}` : 'Aún no has guardado una actualización mensual'}
+                                </p>
+                            </div>
+
+                            <div className="card">
+                                <div className="section-title-row">
+                                    <h2>Otros Activos</h2>
+                                    <button onClick={() => { setShowOtroModal(true); setEditingOtroId(null); setOtroForm(emptyOtroForm); }} style={{ padding: '0.85rem 1.5rem', fontSize: '1rem', fontWeight: '600', borderRadius: '0.75rem', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer' }}>+ Añadir Activo</button>
+                                </div>
+
+                                <div className="update-section" style={{ marginBottom: '1.5rem', maxWidth: '360px' }}>
+                                    <label className="field-label">TRM del día (COP por 1 USD)</label>
+                                    <input type="number" placeholder="Ej: 4050" value={trm} onChange={(e) => setTrm(e.target.value)} />
+                                </div>
+
+                                {Object.keys(totalesOtrosPorMoneda).length > 0 && (
+                                    <div className="grid-compact" style={{ marginBottom: '1.5rem' }}>
+                                        {Object.entries(totalesOtrosPorMoneda).map(([moneda, total]) => (
+                                            <div key={moneda} className="mini-stat compact">
+                                                <p>{moneda}</p>
+                                                <div className="value">{formatCurrency(total, moneda)}</div>
+                                            </div>
+                                        ))}
+                                        <div className="mini-stat compact">
+                                            <p>Total (COP)</p>
+                                            <div className="value" style={{ color: '#10b981' }}>{formatCurrency(totalOtrosEnCOP)}</div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {otrosActivos.length === 0 ? (
+                                    <div className="empty">No hay otros activos registrados.</div>
+                                ) : (
+                                    <div className="item-list">
+                                        {otrosActivos.map((o) => (
+                                            <div key={o.id} className="item-row">
+                                                <div className="item-header">
+                                                    <div>
+                                                        <div className="item-name">{o.nombre}</div>
+                                                        <div className="item-meta">
+                                                            {o.tipo} • {o.moneda}
+                                                            {o.tieneRentabilidad && o.tasa ? ` • ${o.tasa}% EA` : ''}
+                                                            {o.vencimiento ? ` • vence ${formatDate(o.vencimiento)}` : ''}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="item-data">
+                                                    <div className="item-data-item">
+                                                        <p>Monto</p>
+                                                        <div className="value primary">{formatCurrency(Number(o.monto), o.moneda)}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="button-group">
+                                                    <button onClick={() => handleEditOtro(o)} style={{ flex: 1 }}>Editar</button>
+                                                    <button onClick={() => handleDeleteOtro(o.id)} className="danger" style={{ flex: 1 }}>Eliminar</button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {tab === 'deudas' && (
+                        <div>
+                            {/* SECCIÓN MIS TARJETAS */}
+                            <div className="card" style={{ marginBottom: '1.5rem' }}>
+                                <div className="section-title-row">
+                                    <h2>Mis Tarjetas ({tarjetas.length})</h2>
+                                    <button onClick={() => { setTarjetaForm({ nombre: '', banco: 'Rappi', diaCorte: 19, diasGracia: DIAS_GRACIA_DEFAULT, cashbackPct: 0 }); setEditingTarjetaId(null); setShowTarjetaModal(true); }} style={{ padding: '0.7rem 1.2rem', fontSize: '0.9rem', fontWeight: '600', borderRadius: '0.75rem', background: '#3b82f6', color: '#fff', border: 'none', cursor: 'pointer' }}>+ Configurar Tarjeta</button>
+                                </div>
+
+                                {tarjetas.length === 0 ? (
+                                    <p className="empty" style={{ fontSize: '0.85rem' }}>Configura tus tarjetas para calcular automáticamente las fechas de vencimiento</p>
+                                ) : (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                        {tarjetas.map(t => {
+                                            const fechaLimite = calcularVencimientoTC(t.diaCorte, t.diasGracia);
+                                            const semaforo = calcularSemaforoTC(fechaLimite);
+                                            return (
+                                                <div key={t.id} style={{ background: '#1e293b', padding: '0.75rem', borderRadius: '0.5rem', borderLeft: `3px solid ${semaforo.color}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <div>
+                                                        <div style={{ fontWeight: '600', fontSize: '0.9rem' }}>{t.nombre}</div>
+                                                        <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Corte: {t.diaCorte} • Vence: {formatDate(fechaLimite)}{t.cashbackPct ? ` • Cashback: ${t.cashbackPct}%` : ''}</div>
+                                                    </div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                        <span style={{ color: semaforo.color, fontWeight: '700', fontSize: '0.85rem' }}>{semaforo.dias}d</span>
+                                                        <button onClick={() => handleEditTarjeta(t)} style={{ padding: '0.3rem 0.5rem', fontSize: '0.7rem', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '0.4rem', cursor: 'pointer' }}>✎</button>
+                                                        <button onClick={() => handleDeleteTarjeta(t.id)} style={{ padding: '0.3rem 0.5rem', fontSize: '0.7rem', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '0.4rem', cursor: 'pointer' }}>✕</button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+
+                        <div className="card">
+                            <div className="section-title-row">
+                                <h2>Compras ({deudas.length})</h2>
+                                <button onClick={() => { setShowDeudaModal(true); setEditingDeudaId(null); setDeudaForm(emptyDeudaForm); }} style={{ padding: '0.85rem 1.5rem', fontSize: '1rem', fontWeight: '600', borderRadius: '0.75rem', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer' }}>+ Añadir Compra</button>
+                            </div>
+
+                            <div className="grid-compact" style={{ marginBottom: '1.5rem' }}>
+                                <div className="mini-stat compact">
+                                    <p>Saldo Total</p>
+                                    <div className="value" style={{ color: '#ef4444' }}>{formatCurrency(totalDeudaTC)}</div>
+                                </div>
+                                <div className="mini-stat compact">
+                                    <p>Cashback Total</p>
+                                    <div className="value" style={{ color: '#10b981' }}>
+                                        {formatCurrency(deudas.reduce((sum, d) => {
+                                            const tarjetaAsociada = tarjetas.find(t => t.nombre === d.tarjeta || t.banco === d.tarjeta);
+                                            const pct = tarjetaAsociada && tarjetaAsociada.cashbackPct ? Number(tarjetaAsociada.cashbackPct) : 0;
+                                            return sum + (Number(d.montoTotal) * (pct / 100));
+                                        }, 0))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {deudas.length === 0 ? (
+                                <div className="empty">No hay compras registradas.</div>
+                            ) : (
+                                <div className="item-list">
+                                    {deudas.map((d) => {
+                                        const { valorCuota, saldoPendiente, cuotasRestantes } = calcularDeuda(d.montoTotal, d.cuotasTotales, d.cuotasPagadas);
+                                        const ganancia = calcularGananciaCuotas(d.montoTotal, d.cuotasTotales, tasaPromedioPonderada);
+                                        // Buscar tarjeta asociada para calcular semáforo y cashback
+                                        const tarjetaAsociada = tarjetas.find(t => t.nombre === d.tarjeta || t.banco === d.tarjeta);
+                                        const semaforoCompra = tarjetaAsociada ? calcularSemaforoTC(calcularVencimientoTC(tarjetaAsociada.diaCorte, tarjetaAsociada.diasGracia)) : null;
+                                        const cashbackPctAsociado = tarjetaAsociada && tarjetaAsociada.cashbackPct ? Number(tarjetaAsociada.cashbackPct) : 0;
+                                        const cashbackGanado = cashbackPctAsociado > 0 ? Number(d.montoTotal) * (cashbackPctAsociado / 100) : 0;
+                                        return (
+                                            <div key={d.id} className="item-row">
+                                                <div className="item-header">
+                                                    <div>
+                                                        <div className="item-name">{d.nombre}</div>
+                                                        <div className="item-meta">{d.tarjeta} • compra {formatDate(d.fechaCompra)}</div>
+                                                    </div>
+                                                    {saldoPendiente <= 0 ? (
+                                                        <span className="badge">Pagada</span>
+                                                    ) : (
+                                                        <span className="badge muted">{cuotasRestantes} cuota(s) restante(s)</span>
+                                                    )}
+                                                </div>
+                                                {semaforoCompra && saldoPendiente > 0 && (
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', padding: '0.5rem 0.75rem', background: `${semaforoCompra.color}20`, borderRadius: '0.5rem', borderLeft: `3px solid ${semaforoCompra.color}` }}>
+                                                        <span style={{ color: semaforoCompra.color, fontWeight: '700', fontSize: '0.85rem' }}>● {semaforoCompra.label}</span>
+                                                        <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Vence en {semaforoCompra.dias} día(s)</span>
+                                                    </div>
+                                                )}
+                                                <div className="item-data">
+                                                    <div className="item-data-item">
+                                                        <p>Monto Total</p>
+                                                        <div className="value">{formatCurrency(Number(d.montoTotal))}</div>
+                                                    </div>
+                                                    <div className="item-data-item">
+                                                        <p>Cuota</p>
+                                                        <div className="value orange">{formatCurrency(valorCuota)} ({d.cuotasPagadas}/{d.cuotasTotales})</div>
+                                                    </div>
+                                                    <div className="item-data-item">
+                                                        <p>Saldo Pendiente</p>
+                                                        <div className="value primary">{formatCurrency(saldoPendiente)}</div>
+                                                    </div>
+                                                    {d.aplicaCashback && d.cashbackMonto ? (
+                                                        <div className="item-data-item">
+                                                            <p>Cashback Obtenido</p>
+                                                            <div className="value" style={{ color: '#10b981' }}>+{formatCurrency(d.cashbackMonto)}</div>
+                                                        </div>
+                                                    ) : null}
+                                                    {cashbackGanado > 0 ? (
+                                                        <div className="item-data-item">
+                                                            <p>Cashback ({cashbackPctAsociado}%)</p>
+                                                            <div className="value" style={{ color: '#10b981' }}>+{formatCurrency(cashbackGanado)}</div>
+                                                        </div>
+                                                    ) : null}
+                                                </div>
+                                                {d.cuotasTotales > 1 && (
+                                                    <div className="smart-move-box">
+                                                        <div className="smart-move-title">💡 Ganancia por pagar en cuotas (vs. de contado)</div>
+                                                        {ganancia ? (
+                                                            <>
+                                                                <div className="smart-move-amount">+{formatCurrency(ganancia.ganancia)}</div>
+                                                                <div className="smart-move-detail">
+                                                                    Invirtiendo {formatCurrency(ganancia.montoRetenido)} durante {ganancia.mesesAprovechados} mes(es) a {tasaPromedioPonderada.toFixed(2)}% E.A. (tasa promedio de tus CDTs/cuentas)
+                                                                </div>
+                                                            </>
+                                                        ) : (
+                                                            <div className="smart-move-detail">Registra una tasa en tus CDTs o cuentas para calcular esta ganancia.</div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                                <div className="button-group">
+                                                    <button onClick={() => handleEditDeuda(d)} style={{ flex: 1 }}>Editar</button>
+                                                    <button onClick={() => handleDeleteDeuda(d.id)} className="danger" style={{ flex: 1 }}>Eliminar</button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                        </div>
+                    )}
+
+                    {/* MODAL TARJETAS */}
+                    <div className={`modal ${showTarjetaModal ? 'active' : ''}`} onClick={() => { setShowTarjetaModal(false); setEditingTarjetaId(null); setTarjetaForm({ nombre: '', banco: 'Rappi', diaCorte: 19, diasGracia: DIAS_GRACIA_DEFAULT, cashbackPct: 0 }); }}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <h3>{editingTarjetaId ? 'Editar Tarjeta' : 'Nueva Tarjeta de Crédito'}</h3>
+                            <div style={{ display: 'grid', gap: '1rem' }}>
+                                <input type="text" placeholder="Nombre (ej: Rappi Card)" value={tarjetaForm.nombre}
+                                    onChange={(e) => setTarjetaForm({ ...tarjetaForm, nombre: e.target.value })} />
+                                <div>
+                                    <label className="field-label">Banco / Entidad</label>
+                                    <select value={tarjetaForm.banco} onChange={(e) => setTarjetaForm({ ...tarjetaForm, banco: e.target.value })}>
+                                        <option value="Rappi">Rappi</option>
+                                        <option value="Banco de Bogotá">Banco de Bogotá</option>
+                                        <option value="Santander">Santander</option>
+                                        <option value="BBVA">BBVA</option>
+                                        <option value="Scotiabank">Scotiabank</option>
+                                        <option value="Bancolombia">Bancolombia</option>
+                                        <option value="Davivienda">Davivienda</option>
+                                        <option value="Otro">Otro</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="field-label">Día de Corte</label>
+                                    <input type="number" min="1" max="31" value={tarjetaForm.diaCorte}
+                                        onChange={(e) => setTarjetaForm({ ...tarjetaForm, diaCorte: parseInt(e.target.value) })} />
+                                </div>
+                                <div>
+                                    <label className="field-label">Días de Gracia</label>
+                                    <input type="number" min="5" max="30" value={tarjetaForm.diasGracia}
+                                        onChange={(e) => setTarjetaForm({ ...tarjetaForm, diasGracia: parseInt(e.target.value) })} />
+                                </div>
+                                <div>
+                                    <label className="field-label">Cashback (%)</label>
+                                    <input type="number" min="0" max="100" step="0.1" placeholder="Ej: 1, 5" value={tarjetaForm.cashbackPct}
+                                        onChange={(e) => setTarjetaForm({ ...tarjetaForm, cashbackPct: parseFloat(e.target.value) || 0 })} />
+                                </div>
+                                <div style={{ padding: '0.75rem', background: '#1e293b', borderRadius: '0.5rem', fontSize: '0.85rem', color: '#94a3b8' }}>
+                                    <strong>Vencimiento calculado:</strong> {formatDate(calcularVencimientoTC(tarjetaForm.diaCorte, tarjetaForm.diasGracia))}
+                                </div>
+                            </div>
+                            <div className="button-group" style={{ marginTop: '2rem' }}>
+                                <button onClick={() => { setShowTarjetaModal(false); setEditingTarjetaId(null); setTarjetaForm({ nombre: '', banco: 'Rappi', diaCorte: 19, diasGracia: DIAS_GRACIA_DEFAULT, cashbackPct: 0 }); }} style={{ background: '#475569', flex: 1 }}>Cancelar</button>
+                                <button onClick={handleSaveTarjeta} style={{ flex: 1 }}>{editingTarjetaId ? 'Actualizar' : 'Añadir'}</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* MODAL CDT */}
+                    <div className={`modal ${showCdtModal ? 'active' : ''}`} onClick={() => { setShowCdtModal(false); setEditingCdtId(null); setCdtForm(emptyCdtForm); }}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <h3>{editingCdtId ? 'Editar CDT' : 'Nuevo CDT'}</h3>
+                            <div style={{ display: 'grid', gap: '1rem' }}>
+                                <input type="text" placeholder="Nombre (ej: CDT Santander 6M)" value={cdtForm.nombre}
+                                    onChange={(e) => setCdtForm({ ...cdtForm, nombre: e.target.value })} />
+                                <div>
+                                    <label className="field-label">Plataforma / Entidad</label>
+                                    <select value={cdtForm.plataforma} onChange={(e) => setCdtForm({ ...cdtForm, plataforma: e.target.value })}>
+                                        {PLATAFORMAS_CDT.map(p => <option key={p} value={p}>{p}</option>)}
+                                    </select>
+                                </div>
+                                <input type="number" placeholder="Monto Inicial" value={cdtForm.principal}
+                                    onChange={(e) => setCdtForm({ ...cdtForm, principal: e.target.value })} />
+                                <input type="number" placeholder="Tasa Anual (%)" step="0.01" value={cdtForm.tasa}
+                                    onChange={(e) => setCdtForm({ ...cdtForm, tasa: e.target.value })} />
+                                <div>
+                                    <label className="field-label">Fecha de Creación</label>
+                                    <input type="date" value={cdtForm.fechaCreacion}
+                                        onChange={(e) => setCdtForm({ ...cdtForm, fechaCreacion: e.target.value })} />
+                                </div>
+                                <div>
+                                    <label className="field-label">Fecha de Vencimiento</label>
+                                    <input type="date" value={cdtForm.fechaVencimiento}
+                                        onChange={(e) => setCdtForm({ ...cdtForm, fechaVencimiento: e.target.value })} />
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem', background: '#0f172a', borderRadius: '0.5rem' }}>
+                                    <input type="checkbox" id="gmf-check" checked={cdtForm.aplicaGmf} onChange={(e) => setCdtForm({ ...cdtForm, aplicaGmf: e.target.checked })} />
+                                    <label htmlFor="gmf-check" style={{ fontSize: '0.9rem', color: '#94a3b8', cursor: 'pointer', flex: 1, margin: 0 }}>
+                                        ¿Se cobró GMF (4×1000)?
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="button-group" style={{ marginTop: '2rem' }}>
+                                <button onClick={() => { setShowCdtModal(false); setEditingCdtId(null); setCdtForm(emptyCdtForm); }} style={{ background: '#475569', flex: 1 }}>Cancelar</button>
+                                <button onClick={handleSaveCdt} style={{ flex: 1 }}>{editingCdtId ? 'Actualizar' : 'Añadir'}</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* MODAL CUENTA DE AHORRO */}
+                    <div className={`modal ${showCuentaModal ? 'active' : ''}`} onClick={() => { setShowCuentaModal(false); setEditingCuentaId(null); setCuentaForm(emptyCuentaForm); }}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <h3>{editingCuentaId ? 'Editar Cuenta' : 'Nueva Cuenta de Ahorro'}</h3>
+                            <div style={{ display: 'grid', gap: '1rem' }}>
+                                <input type="text" placeholder="Nombre (ej: Nu principal)" value={cuentaForm.nombre}
+                                    onChange={(e) => setCuentaForm({ ...cuentaForm, nombre: e.target.value })} />
+                                <div>
+                                    <label className="field-label">Plataforma / Entidad</label>
+                                    <select value={cuentaForm.plataforma} onChange={(e) => setCuentaForm({ ...cuentaForm, plataforma: e.target.value, customBanco: '' })}>
+                                        {BANCOS.map(b => <option key={b} value={b}>{b}</option>)}
+                                    </select>
+                                </div>
+                                {cuentaForm.plataforma === 'Otro' && (
+                                    <input type="text" placeholder="Nombre del banco" value={cuentaForm.customBanco}
+                                        onChange={(e) => setCuentaForm({ ...cuentaForm, customBanco: e.target.value })} />
+                                )}
+                                <div>
+                                    <label className="field-label">Tipo</label>
+                                    <select value={cuentaForm.tipo} onChange={(e) => setCuentaForm({ ...cuentaForm, tipo: e.target.value })}>
+                                        <option value="Ahorro">Cuenta de Ahorro</option>
+                                        <option value="Corriente">Cuenta Corriente</option>
+                                        <option value="Billetera">Billetera digital</option>
+                                    </select>
+                                </div>
+                                <input type="number" placeholder="Saldo Actual" value={cuentaForm.saldo}
+                                    onChange={(e) => setCuentaForm({ ...cuentaForm, saldo: e.target.value })} />
+                                <div>
+                                    <label className="field-label">Tasa de Rendimiento Efectivo Anual (E.A. %)</label>
+                                    <input type="number" placeholder="Ej: 11.5" step="0.01" value={cuentaForm.tasa}
+                                        onChange={(e) => setCuentaForm({ ...cuentaForm, tasa: e.target.value })} />
+                                </div>
+                            </div>
+                            <div className="button-group" style={{ marginTop: '2rem' }}>
+                                <button onClick={() => { setShowCuentaModal(false); setEditingCuentaId(null); setCuentaForm(emptyCuentaForm); }} style={{ background: '#475569', flex: 1 }}>Cancelar</button>
+                                <button onClick={handleSaveCuenta} style={{ flex: 1 }}>{editingCuentaId ? 'Actualizar' : 'Añadir'}</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* MODAL DEUDA TC */}
+                    <div className={`modal ${showDeudaModal ? 'active' : ''}`} onClick={() => { setShowDeudaModal(false); setEditingDeudaId(null); setDeudaForm(emptyDeudaForm); }}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <h3>{editingDeudaId ? 'Editar Compra' : 'Nueva Compra a Crédito'}</h3>
+                            <div style={{ display: 'grid', gap: '1rem' }}>
+                                <input type="text" placeholder="Nombre (ej: Portátil MercadoLibre)" value={deudaForm.nombre}
+                                    onChange={(e) => setDeudaForm({ ...deudaForm, nombre: e.target.value })} />
+                                <div>
+                                    <label className="field-label">Tarjeta</label>
+                                    <select value={deudaForm.tarjeta} onChange={(e) => setDeudaForm({ ...deudaForm, tarjeta: e.target.value })}>
+                                        {tarjetas.length > 0 ? (
+                                            tarjetas.map(t => <option key={t.id} value={t.nombre}>{t.nombre}</option>)
+                                        ) : (
+                                            PLATAFORMAS.map(p => <option key={p} value={p}>{p}</option>)
+                                        )}
+                                    </select>
+                                </div>
+                                <input type="number" placeholder="Monto Total de la Compra" value={deudaForm.montoTotal}
+                                    onChange={(e) => setDeudaForm({ ...deudaForm, montoTotal: e.target.value })} />
+                                <div>
+                                    <label className="field-label">Cuotas Totales (1 = una sola cuota)</label>
+                                    <input type="number" min="1" value={deudaForm.cuotasTotales}
+                                        onChange={(e) => setDeudaForm({ ...deudaForm, cuotasTotales: e.target.value })} />
+                                </div>
+                                <div>
+                                    <label className="field-label">Cuotas Ya Pagadas</label>
+                                    <input type="number" min="0" value={deudaForm.cuotasPagadas}
+                                        onChange={(e) => setDeudaForm({ ...deudaForm, cuotasPagadas: e.target.value })} />
+                                </div>
+                                <div>
+                                    <label className="field-label">Fecha de Compra</label>
+                                    <input type="date" value={deudaForm.fechaCompra}
+                                        onChange={(e) => setDeudaForm({ ...deudaForm, fechaCompra: e.target.value })} />
+                                </div>
+                            </div>
+                            <div className="button-group" style={{ marginTop: '2rem' }}>
+                                <button onClick={() => { setShowDeudaModal(false); setEditingDeudaId(null); setDeudaForm(emptyDeudaForm); }} style={{ background: '#475569', flex: 1 }}>Cancelar</button>
+                                <button onClick={handleSaveDeuda} style={{ flex: 1 }}>{editingDeudaId ? 'Actualizar' : 'Añadir'}</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* MODAL OTRO ACTIVO */}
+                    <div className={`modal ${showOtroModal ? 'active' : ''}`} onClick={() => { setShowOtroModal(false); setEditingOtroId(null); setOtroForm(emptyOtroForm); }}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <h3>{editingOtroId ? 'Editar Activo' : 'Nuevo Activo'}</h3>
+                            <div style={{ display: 'grid', gap: '1rem' }}>
+                                <input type="text" placeholder="Nombre (ej: Ahorro en dólares, Acciones Ecopetrol)" value={otroForm.nombre}
+                                    onChange={(e) => setOtroForm({ ...otroForm, nombre: e.target.value })} />
+                                <div>
+                                    <label className="field-label">Tipo</label>
+                                    <input type="text" placeholder="Ej: Dólares, Efectivo, Colección, Acciones, Otro" value={otroForm.tipo}
+                                        onChange={(e) => setOtroForm({ ...otroForm, tipo: e.target.value })} />
+                                </div>
+                                <div>
+                                    <label className="field-label">Moneda</label>
+                                    <select value={otroForm.moneda} onChange={(e) => setOtroForm({ ...otroForm, moneda: e.target.value })}>
+                                        <option value="COP">COP</option>
+                                        <option value="USD">USD</option>
+                                    </select>
+                                </div>
+                                <input type="number" placeholder="Monto" value={otroForm.monto}
+                                    onChange={(e) => setOtroForm({ ...otroForm, monto: e.target.value })} />
+                                <div>
+                                    <label className="field-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <input type="checkbox" style={{ width: 'auto' }} checked={otroForm.tieneRentabilidad}
+                                            onChange={(e) => setOtroForm({ ...otroForm, tieneRentabilidad: e.target.checked })} />
+                                        ¿Tiene rentabilidad?
+                                    </label>
+                                </div>
+                                {otroForm.tieneRentabilidad && (
+                                    <div>
+                                        <label className="field-label">Tasa Efectiva Anual (%)</label>
+                                        <input type="number" step="0.01" placeholder="Ej: 8.5" value={otroForm.tasa}
+                                            onChange={(e) => setOtroForm({ ...otroForm, tasa: e.target.value })} />
+                                    </div>
+                                )}
+                                <div>
+                                    <label className="field-label">Vencimiento (opcional)</label>
+                                    <input type="date" value={otroForm.vencimiento}
+                                        onChange={(e) => setOtroForm({ ...otroForm, vencimiento: e.target.value })} />
+                                </div>
+                            </div>
+                            <div className="button-group" style={{ marginTop: '2rem' }}>
+                                <button onClick={() => { setShowOtroModal(false); setEditingOtroId(null); setOtroForm(emptyOtroForm); }} style={{ background: '#475569', flex: 1 }}>Cancelar</button>
+                                <button onClick={handleSaveOtro} style={{ flex: 1 }}>{editingOtroId ? 'Actualizar' : 'Añadir'}</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {showGastoModal && (
+                        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'flex-end', zIndex: 1000 }}>
+                            <div style={{ width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#0f172a', borderRadius: '1rem 1rem 0 0', padding: '2rem 1.5rem' }}>
+                                <h2 style={{ marginTop: 0, marginBottom: '1.5rem' }}>{editingGastoId ? 'Editar Gasto' : 'Nuevo Gasto'}</h2>
+                                
+                                <input type="text" placeholder="Descripción" value={gastoForm.descripcion}
+                                    onChange={(e) => setGastoForm({ ...gastoForm, descripcion: e.target.value })}
+                                    style={{ width: '100%', padding: '0.75rem', marginBottom: '1rem', background: '#1e293b', color: '#e2e8f0', border: '1px solid #475569', borderRadius: '0.75rem', fontSize: '1rem' }} />
+                                
+                                <input type="number" placeholder="Monto" value={gastoForm.monto}
+                                    onChange={(e) => setGastoForm({ ...gastoForm, monto: e.target.value })}
+                                    style={{ width: '100%', padding: '0.75rem', marginBottom: '1rem', background: '#1e293b', color: '#e2e8f0', border: '1px solid #475569', borderRadius: '0.75rem', fontSize: '1rem' }} />
+                                
+                                <input type="date" value={gastoForm.fecha}
+                                    onChange={(e) => setGastoForm({ ...gastoForm, fecha: e.target.value })}
+                                    style={{ width: '100%', padding: '0.75rem', marginBottom: '1rem', background: '#1e293b', color: '#e2e8f0', border: '1px solid #475569', borderRadius: '0.75rem', fontSize: '1rem' }} />
+                                
+                                <select value={gastoForm.metodo} onChange={(e) => setGastoForm({ ...gastoForm, metodo: e.target.value })}
+                                    style={{ width: '100%', padding: '0.75rem', marginBottom: '1rem', background: '#1e293b', color: '#e2e8f0', border: '1px solid #475569', borderRadius: '0.75rem', fontSize: '1rem' }}>
+                                    <option value="cuenta">Cuenta</option>
+                                    <option value="tarjeta">Tarjeta de Crédito</option>
+                                    <option value="efectivo">Efectivo</option>
+                                </select>
+
+                                <select value={gastoForm.categoria} onChange={(e) => setGastoForm({ ...gastoForm, categoria: e.target.value })}
+                                    style={{ width: '100%', padding: '0.75rem', marginBottom: '1rem', background: '#1e293b', color: '#e2e8f0', border: '1px solid #475569', borderRadius: '0.75rem', fontSize: '1rem' }}>
+                                    {CATEGORIAS_GASTOS.map(cat => (
+                                        <option key={cat} value={cat}>{cat}</option>
+                                    ))}
+                                </select>
+
+                                {gastoForm.metodo === 'tarjeta' && (
+                                    <select value={gastoForm.tarjeta} onChange={(e) => setGastoForm({ ...gastoForm, tarjeta: e.target.value })}
+                                        style={{ width: '100%', padding: '0.75rem', marginBottom: '1rem', background: '#1e293b', color: '#e2e8f0', border: '1px solid #475569', borderRadius: '0.75rem', fontSize: '1rem' }}>
+                                        {PLATAFORMAS.map(p => (
+                                            <option key={p} value={p}>{p}</option>
+                                        ))}
+                                    </select>
+                                )}
+
+                                <div className="button-group" style={{ marginTop: '2rem' }}>
+                                    <button onClick={() => { setShowGastoModal(false); setEditingGastoId(null); setGastoForm(getEmptyGastoForm()); }} style={{ background: '#475569', flex: 1 }}>Cancelar</button>
+                                    <button onClick={editingGastoId ? handleUpdateGasto : handleSaveGasto} style={{ flex: 1 }}>{editingGastoId ? 'Actualizar' : 'Guardar'}</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {toast && <div className="toast">{toast}</div>}
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(() => console.log('Service Worker registrado — la app ya funciona sin conexión'))
+                    .catch((err) => console.error('Error registrando Service Worker:', err));
+            });
+        }
+    </script>
+</body>
+</html>
