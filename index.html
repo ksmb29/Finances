@@ -32,6 +32,57 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            padding-bottom: 5.5rem;
+        }
+
+        .footer-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #334155;
+            z-index: 900;
+        }
+
+        .footer-actions-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-actions .icon-btn {
+            width: 2.75rem;
+            height: 2.75rem;
+            background: #1e293b;
+            border: 1px solid #334155;
+        }
+
+        .footer-actions .fab-add {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 9999px;
+            background: linear-gradient(145deg, #34d399, #059669);
+            color: #fff;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 18px rgba(16, 185, 129, 0.45), inset 0 1px 1px rgba(255,255,255,0.25);
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            -webkit-tap-highlight-color: transparent;
+            flex-shrink: 0;
+        }
+
+        .footer-actions .fab-add:active {
+            transform: scale(0.9);
         }
 
         .header {
@@ -130,6 +181,44 @@
             border-radius: 0.75rem;
             padding: 1.5rem;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .gasto-cta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            cursor: pointer;
+            transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        .gasto-cta:active {
+            transform: scale(0.98);
+            border-color: #10b981;
+        }
+
+        .gasto-cta-fab {
+            flex-shrink: 0;
+            width: 9rem;
+            height: 9rem;
+            border-radius: 9999px;
+            background: linear-gradient(145deg, #34d399, #059669);
+            color: #fff;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.45), inset 0 1px 1px rgba(255,255,255,0.25);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .gasto-cta:active .gasto-cta-fab {
+            transform: scale(0.92);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.5), inset 0 1px 1px rgba(255,255,255,0.25);
         }
 
         .card h2 {
@@ -749,6 +838,15 @@
             const [hideAmounts, setHideAmounts] = useState(() => localStorage.getItem('hideAmounts') === 'true');
 
             const [tab, setTab] = useState('home');
+            const ORDEN_TABS = ['home', 'deudas', 'cuentas', 'cdts', 'fondos'];
+            const irTabAnterior = () => {
+                const i = ORDEN_TABS.indexOf(tab);
+                setTab(ORDEN_TABS[(i - 1 + ORDEN_TABS.length) % ORDEN_TABS.length]);
+            };
+            const irTabSiguiente = () => {
+                const i = ORDEN_TABS.indexOf(tab);
+                setTab(ORDEN_TABS[(i + 1) % ORDEN_TABS.length]);
+            };
             const [showCdtModal, setShowCdtModal] = useState(false);
             const [showCuentaModal, setShowCuentaModal] = useState(false);
             const [showDeudaModal, setShowDeudaModal] = useState(false);
@@ -762,6 +860,25 @@
             const [editingGastoId, setEditingGastoId] = useState(null);
             const [showGastoModal, setShowGastoModal] = useState(false);
             const [lastBackupDate, setLastBackupDate] = useState(() => localStorage.getItem('lastBackupDate') || '');
+
+            const [categoriasGastos, setCategoriasGastos] = useState(() => {
+                const saved = localStorage.getItem('categoriasGastos');
+                return saved ? JSON.parse(saved) : CATEGORIAS_GASTOS;
+            });
+            useEffect(() => { localStorage.setItem('categoriasGastos', JSON.stringify(categoriasGastos)); }, [categoriasGastos]);
+            const [nuevaCategoriaInput, setNuevaCategoriaInput] = useState('');
+            const [mostrandoNuevaCategoria, setMostrandoNuevaCategoria] = useState(false);
+
+            const handleAgregarCategoria = () => {
+                const nombre = nuevaCategoriaInput.trim();
+                if (!nombre) return;
+                if (!categoriasGastos.includes(nombre)) {
+                    setCategoriasGastos([...categoriasGastos, nombre]);
+                }
+                setGastoForm(prev => ({ ...prev, categoria: nombre }));
+                setNuevaCategoriaInput('');
+                setMostrandoNuevaCategoria(false);
+            };
             
             const [tarjetas, setTarjetas] = useState(() => {
                 const saved = localStorage.getItem('tarjetas');
@@ -795,7 +912,7 @@
                 const month = String(hoy.getMonth() + 1).padStart(2, '0');
                 const day = String(hoy.getDate()).padStart(2, '0');
                 const fechaHoy = `${year}-${month}-${day}`;
-                return { descripcion: '', monto: '', metodo: 'cuenta', tarjeta: 'Rappi', fecha: fechaHoy, aplicaCashback: false, categoria: 'Mercado' };
+                return { descripcion: '', monto: '', metodo: 'cuenta', tarjeta: 'Rappi', cuentaId: cuentaFavoritaId || '', fecha: fechaHoy, aplicaCashback: false, categoria: 'Mercado' };
             };
 
             const [cdtForm, setCdtForm] = useState(emptyCdtForm);
@@ -1159,11 +1276,11 @@
                 const monto = Number(gastoForm.monto);
 
                 if (gastoForm.metodo === 'cuenta') {
-                    if (!cuentaFavoritaId) {
-                        alert('Primero elige tu banco/cuenta favorita arriba');
+                    if (!gastoForm.cuentaId) {
+                        alert('Elige una cuenta para este gasto');
                         return;
                     }
-                    setCuentas(cuentas.map(c => c.id === Number(cuentaFavoritaId)
+                    setCuentas(cuentas.map(c => c.id === Number(gastoForm.cuentaId)
                         ? { ...c, saldo: Number(c.saldo || 0) - monto }
                         : c));
                     setGastos([...gastos, {
@@ -1171,7 +1288,7 @@
                         descripcion: gastoForm.descripcion,
                         monto,
                         metodo: 'cuenta',
-                        cuentaId: cuentaFavoritaId,
+                        cuentaId: gastoForm.cuentaId,
                         fecha: gastoForm.fecha,
                         categoria: gastoForm.categoria
                     }]);
@@ -1216,11 +1333,15 @@
                     showToast('Gasto en efectivo registrado');
                 }
                 setGastoForm(getEmptyGastoForm());
+                setMostrandoNuevaCategoria(false);
+                setNuevaCategoriaInput('');
             };
 
             const handleEditGasto = (gasto) => {
                 setGastoForm(gasto);
                 setEditingGastoId(gasto.id);
+                setMostrandoNuevaCategoria(false);
+                setNuevaCategoriaInput('');
                 setShowGastoModal(true);
             };
 
@@ -1234,6 +1355,8 @@
                 setEditingGastoId(null);
                 setShowGastoModal(false);
                 setGastoForm(getEmptyGastoForm());
+                setMostrandoNuevaCategoria(false);
+                setNuevaCategoriaInput('');
                 showToast('Gasto actualizado');
             };
 
@@ -1581,8 +1704,20 @@
 
             return (
                 <div className="container">
-                    <div className="header">
-                        <div className="header-actions" style={{ marginLeft: 'auto' }}>
+                    <input type="file" accept="application/json" ref={fileInputRef} onChange={handleImportFile} style={{ display: 'none' }} />
+
+                    <div className="footer-actions">
+                        <div className="footer-actions-left">
+                            <button className="btn-secondary icon-btn" onClick={irTabAnterior} title="Tab anterior" aria-label="Tab anterior">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="15 18 9 12 15 6"></polyline>
+                                </svg>
+                            </button>
+                            <button className="btn-secondary icon-btn" onClick={irTabSiguiente} title="Tab siguiente" aria-label="Tab siguiente">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                            </button>
                             <button className="btn-secondary icon-btn" onClick={handleExport} title="Exportar">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -1597,7 +1732,6 @@
                                     <line x1="12" y1="3" x2="12" y2="15"></line>
                                 </svg>
                             </button>
-                            <input type="file" accept="application/json" ref={fileInputRef} onChange={handleImportFile} style={{ display: 'none' }} />
                             <button className="btn-secondary icon-btn" onClick={() => setHideAmounts(!hideAmounts)} title={hideAmounts ? 'Mostrar montos' : 'Ocultar montos'}>
                                 {hideAmounts ? (
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1612,6 +1746,13 @@
                                 )}
                             </button>
                         </div>
+
+                        <button className="fab-add" onClick={() => { setGastoForm(getEmptyGastoForm()); setEditingGastoId(null); setMostrandoNuevaCategoria(false); setNuevaCategoriaInput(''); setShowGastoModal(true); }} title="Agregar gasto" aria-label="Agregar gasto">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                        </button>
                     </div>
 
                     <div className="tabs">
@@ -1624,17 +1765,6 @@
 
                     {tab === 'home' && (
                         <div>
-                            {/* SECCIÓN AGREGAR GASTO - BOTÓN GRANDE */}
-                            <div className="card" style={{ marginBottom: '1rem', padding: '2rem 1.5rem', textAlign: 'center' }}>
-                                <div style={{ marginBottom: '1rem' }}>
-                                    <p style={{ color: '#94a3b8', marginBottom: '1.5rem', fontSize: '0.95rem' }}>Registra un gasto del día</p>
-                                    <button onClick={() => { setGastoForm(getEmptyGastoForm()); setEditingGastoId(null); setShowGastoModal(true); }} 
-                                        style={{ width: '100%', padding: '1.2rem', fontSize: '1.1rem', fontWeight: '600', background: '#10b981', color: '#fff', border: 'none', borderRadius: '0.75rem', cursor: 'pointer', marginBottom: '1rem' }}>
-                                        + Agregar Gasto
-                                    </button>
-                                </div>
-                            </div>
-
                             {/* SECCIÓN RESUMEN HOYESTE MES + RECIENTES */}
                             <div className="card" style={{ marginBottom: '1rem', padding: '0', overflow: 'hidden' }}>
                                 {/* RESUMEN HOYESTE MES */}
@@ -1812,12 +1942,12 @@
                                                             }
                                                             
                                                             const promedios = {};
-                                                            CATEGORIAS_GASTOS.forEach(cat => {
+                                                            categoriasGastos.forEach(cat => {
                                                                 const totalCat = gastosOrdenados.filter(g => (g.categoria || 'Sin categoría') === cat && gastosUltimos12Meses.includes(g.fecha.slice(0, 7))).reduce((a, b) => a + Number(b.monto), 0);
                                                                 promedios[cat] = Math.round(totalCat / 12);
                                                             });
 
-                                                            return CATEGORIAS_GASTOS.map(cat => (
+                                                            return categoriasGastos.map(cat => (
                                                                 <div key={cat} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', padding: '0.35rem 0', borderBottom: '1px solid #1e293b' }}>
                                                                     <span>{cat}</span>
                                                                     <span style={{ fontWeight: '600' }}>{formatCurrency(promedios[cat])}/mes</span>
@@ -2596,8 +2726,10 @@
                     </div>
 
                     {showGastoModal && (
-                        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'flex-end', zIndex: 1000 }}>
-                            <div style={{ width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#0f172a', borderRadius: '1rem 1rem 0 0', padding: '2rem 1.5rem' }}>
+                        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'flex-end', zIndex: 1000 }}
+                            onClick={() => { setShowGastoModal(false); setEditingGastoId(null); setGastoForm(getEmptyGastoForm()); setMostrandoNuevaCategoria(false); setNuevaCategoriaInput(''); }}>
+                            <div style={{ width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#0f172a', borderRadius: '1rem 1rem 0 0', padding: '2rem 1.5rem' }}
+                                onClick={(e) => e.stopPropagation()}>
                                 <h2 style={{ marginTop: 0, marginBottom: '1.5rem' }}>{editingGastoId ? 'Editar Gasto' : 'Nuevo Gasto'}</h2>
                                 
                                 <input type="text" placeholder="Descripción" value={gastoForm.descripcion}
@@ -2619,16 +2751,53 @@
                                     <option value="efectivo">Efectivo</option>
                                 </select>
 
-                                <select value={gastoForm.categoria} onChange={(e) => setGastoForm({ ...gastoForm, categoria: e.target.value })}
-                                    style={{ width: '100%', padding: '0.75rem', marginBottom: '1rem', background: '#1e293b', color: '#e2e8f0', border: '1px solid #475569', borderRadius: '0.75rem', fontSize: '1rem' }}>
-                                    {CATEGORIAS_GASTOS.map(cat => (
+                                <select value={mostrandoNuevaCategoria ? '__nueva__' : gastoForm.categoria}
+                                    onChange={(e) => {
+                                        if (e.target.value === '__nueva__') {
+                                            setMostrandoNuevaCategoria(true);
+                                        } else {
+                                            setMostrandoNuevaCategoria(false);
+                                            setGastoForm({ ...gastoForm, categoria: e.target.value });
+                                        }
+                                    }}
+                                    style={{ width: '100%', padding: '0.75rem', marginBottom: mostrandoNuevaCategoria ? '0.5rem' : '1rem', background: '#1e293b', color: '#e2e8f0', border: '1px solid #475569', borderRadius: '0.75rem', fontSize: '1rem' }}>
+                                    {categoriasGastos.map(cat => (
                                         <option key={cat} value={cat}>{cat}</option>
                                     ))}
+                                    <option value="__nueva__">➕ Nueva categoría...</option>
                                 </select>
 
-                                {gastoForm.metodo === 'tarjeta' && (
-                                    <select value={gastoForm.tarjeta} onChange={(e) => setGastoForm({ ...gastoForm, tarjeta: e.target.value })}
+                                {mostrandoNuevaCategoria && (
+                                    <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                                        <input type="text" placeholder="Nombre de la categoría" value={nuevaCategoriaInput}
+                                            autoFocus
+                                            onChange={(e) => setNuevaCategoriaInput(e.target.value)}
+                                            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAgregarCategoria(); } }}
+                                            style={{ flex: 1, padding: '0.75rem', background: '#1e293b', color: '#e2e8f0', border: '1px solid #475569', borderRadius: '0.75rem', fontSize: '1rem' }} />
+                                        <button onClick={handleAgregarCategoria} style={{ padding: '0 1.25rem' }}>Añadir</button>
+                                    </div>
+                                )}
+
+                                {gastoForm.metodo === 'cuenta' ? (
+                                    <select value={gastoForm.cuentaId} onChange={(e) => setGastoForm({ ...gastoForm, cuentaId: e.target.value })}
                                         style={{ width: '100%', padding: '0.75rem', marginBottom: '1rem', background: '#1e293b', color: '#e2e8f0', border: '1px solid #475569', borderRadius: '0.75rem', fontSize: '1rem' }}>
+                                        <option value="">Selecciona una cuenta...</option>
+                                        {cuentas.map(c => (
+                                            <option key={c.id} value={c.id}>{c.nombre} ({c.plataforma})</option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <select value={gastoForm.metodo === 'tarjeta' ? gastoForm.tarjeta : ''}
+                                        disabled={gastoForm.metodo !== 'tarjeta'}
+                                        onChange={(e) => setGastoForm({ ...gastoForm, tarjeta: e.target.value })}
+                                        style={{
+                                            width: '100%', padding: '0.75rem', marginBottom: '1rem',
+                                            background: gastoForm.metodo !== 'tarjeta' ? '#161f30' : '#1e293b',
+                                            color: gastoForm.metodo !== 'tarjeta' ? '#475569' : '#e2e8f0',
+                                            border: '1px solid #334155', borderRadius: '0.75rem', fontSize: '1rem',
+                                            cursor: gastoForm.metodo !== 'tarjeta' ? 'not-allowed' : 'pointer'
+                                        }}>
+                                        {gastoForm.metodo !== 'tarjeta' && <option value="">Tarjeta de crédito (no aplica)</option>}
                                         {PLATAFORMAS.map(p => (
                                             <option key={p} value={p}>{p}</option>
                                         ))}
@@ -2636,7 +2805,7 @@
                                 )}
 
                                 <div className="button-group" style={{ marginTop: '2rem' }}>
-                                    <button onClick={() => { setShowGastoModal(false); setEditingGastoId(null); setGastoForm(getEmptyGastoForm()); }} style={{ background: '#475569', flex: 1 }}>Cancelar</button>
+                                    <button onClick={() => { setShowGastoModal(false); setEditingGastoId(null); setGastoForm(getEmptyGastoForm()); setMostrandoNuevaCategoria(false); setNuevaCategoriaInput(''); }} style={{ background: '#475569', flex: 1 }}>Cancelar</button>
                                     <button onClick={editingGastoId ? handleUpdateGasto : handleSaveGasto} style={{ flex: 1 }}>{editingGastoId ? 'Actualizar' : 'Guardar'}</button>
                                 </div>
                             </div>
