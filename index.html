@@ -17,26 +17,26 @@
     <style>
         :root {
             /* Paleta de color unificada */
-            --bg: var(--bg);
-            --surface: var(--surface);
-            --surface-2: var(--surface-2);
-            --border: var(--border);
-            --border-2: var(--border-2);
-            --text: var(--text);
-            --muted: var(--muted);
-            --muted-2: var(--muted-2);
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface-2: #161f30;
+            --border: #334155;
+            --border-2: #475569;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --muted-2: #64748b;
 
-            --success: var(--success);
-            --success-dark: var(--success-dark);
-            --success-light: var(--success-light);
-            --danger: var(--danger);
-            --danger-dark: var(--danger-dark);
-            --danger-critical: var(--danger-critical);
-            --info: var(--info);
-            --purple: var(--purple);
-            --expense: var(--expense);
-            --warning: var(--warning);
-            --cyan: var(--cyan);
+            --success: #10b981;
+            --success-dark: #059669;
+            --success-light: #34d399;
+            --danger: #ef4444;
+            --danger-dark: #dc2626;
+            --danger-critical: #8b0000;
+            --info: #3b82f6;
+            --purple: #a855f7;
+            --expense: #f97316;
+            --warning: #eab308;
+            --cyan: #06b6d4;
 
             /* Escala tipográfica unificada */
             --fs-2xs: 0.7rem;
@@ -1888,6 +1888,70 @@
                                 )}
                             </div>
 
+
+                            {/* ANÁLISIS DE CATEGORÍAS */}
+                            <div className="card">
+                                {(() => {
+                                    const gastosPorCategoria = {};
+                                    const hoyDate = new Date();
+                                    const mesActual = hoyDate.getFullYear() + '-' + String(hoyDate.getMonth() + 1).padStart(2, '0');
+
+                                    gastosOrdenados.forEach(g => {
+                                        const gastoMes = g.fecha.slice(0, 7);
+                                        if (gastoMes === mesActual) {
+                                            const cat = g.categoria || 'Sin categoría';
+                                            gastosPorCategoria[cat] = (gastosPorCategoria[cat] || 0) + Number(g.monto);
+                                        }
+                                    });
+
+                                    const totalGastosCategorizados = Object.values(gastosPorCategoria).reduce((a, b) => a + b, 0);
+
+                                    // Promedios mensuales de los últimos 12 meses, por categoría
+                                    const gastosUltimos12Meses = [];
+                                    for (let i = 0; i < 12; i++) {
+                                        const fecha = new Date(hoyDate.getFullYear(), hoyDate.getMonth() - i, 1);
+                                        const mes = fecha.getFullYear() + '-' + String(fecha.getMonth() + 1).padStart(2, '0');
+                                        gastosUltimos12Meses.push(mes);
+                                    }
+                                    const promedios = {};
+                                    categoriasGastos.forEach(cat => {
+                                        const totalCat = gastosOrdenados.filter(g => (g.categoria || 'Sin categoría') === cat && gastosUltimos12Meses.includes(g.fecha.slice(0, 7))).reduce((a, b) => a + Number(b.monto), 0);
+                                        promedios[cat] = Math.round(totalCat / 12);
+                                    });
+
+                                    // TODAS las categorías, incluidas las de $0 este mes — ordenadas por gasto de este mes
+                                    const todasLasCategorias = [...categoriasGastos].sort((a, b) => (gastosPorCategoria[b] || 0) - (gastosPorCategoria[a] || 0));
+                                    // Misma paleta usada en las tarjetas de Líquido/Total, rotando por categoría
+                                    const paletaColores = ['var(--info)', 'var(--success)', 'var(--purple)', 'var(--expense)', 'var(--danger)'];
+                                    const colores = {};
+                                    categoriasGastos.forEach((cat, i) => { colores[cat] = paletaColores[i % paletaColores.length]; });
+
+                                    return (
+                                        <div>
+                                            {todasLasCategorias.map((cat) => {
+                                                const monto = gastosPorCategoria[cat] || 0;
+                                                const porcentaje = totalGastosCategorizados > 0 ? (monto / totalGastosCategorizados) * 100 : 0;
+                                                return (
+                                                    <div key={cat} style={{ marginBottom: '1rem' }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '0.5rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
+                                                            <span style={{ fontSize: 'var(--fs-sm)', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cat}</span>
+                                                            <span style={{ fontSize: 'var(--fs-2xs)', color: 'var(--muted)', flexShrink: 0 }}>Prom. mensual: <strong style={{ color: 'var(--text)' }}>{formatCurrency(promedios[cat] || 0)}</strong></span>
+                                                        </div>
+                                                        <div style={{ position: 'relative', height: '26px', background: 'rgba(100,116,139,0.2)', borderRadius: '6px', overflow: 'hidden' }}>
+                                                            <div style={{ position: 'absolute', top: 0, left: 0, height: '100%', background: colores[cat] || 'var(--muted-2)', width: `${porcentaje}%`, transition: 'width 0.3s' }}></div>
+                                                            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', fontSize: 'var(--fs-2xs)', fontWeight: '700', color: '#fff', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>
+                                                                <span>{formatCurrency(monto)}</span>
+                                                                <span style={{ opacity: 0.85 }}>· {porcentaje.toFixed(1)}%</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    );
+                                })()}
+                            </div>
+
                             {/* SECCIÓN RESUMEN: HOY / ESTA SEMANA / ESTE MES / ESTE AÑO (neto = rentabilidad - gastos) */}
                             <div className="card" style={{ marginBottom: '1rem', padding: '0', overflow: 'hidden' }}>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
@@ -1913,6 +1977,102 @@
                                         </div>
                                     ))}
                                 </div>
+                            </div>
+
+
+                            <div className="card">
+                                {(() => {
+                                    const pad = (n) => String(n).padStart(2, '0');
+                                    const fmtDiaMes = (fechaStr) => {
+                                        const d = new Date(fechaStr + 'T00:00:00');
+                                        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}`;
+                                    };
+                                    const fmtMes = (mesStr) => {
+                                        const [y, m] = mesStr.split('-');
+                                        const d = new Date(Number(y), Number(m) - 1, 1);
+                                        return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                                    };
+
+                                    // TODOS los días registrados (más reciente primero)
+                                    const filasDiarias = historialOrdenado.map((h, i) => {
+                                        const anterior = historialOrdenado[i - 1];
+                                        const variacion = anterior ? h.total - anterior.total : 0;
+                                        const pct = anterior && anterior.total !== 0 ? (variacion / anterior.total) * 100 : 0;
+                                        return { key: h.fecha, fecha: fmtDiaMes(h.fecha), liquido: h.total, variacion, pct, esPrimero: !anterior };
+                                    }).reverse();
+
+                                    // TODAS las semanas (bloques de 7 días consecutivos registrados)
+                                    const bloquesSemana = [];
+                                    for (let i = 0; i < historialOrdenado.length; i += 7) {
+                                        bloquesSemana.push(historialOrdenado.slice(i, i + 7));
+                                    }
+                                    const filasSemanales = bloquesSemana.map((bloque, i) => {
+                                        const primero = bloque[0];
+                                        const ultimo = bloque[bloque.length - 1];
+                                        const variacion = ultimo.total - primero.total;
+                                        const pct = primero.total !== 0 ? (variacion / primero.total) * 100 : 0;
+                                        const dIni = new Date(primero.fecha + 'T00:00:00');
+                                        const dFin = new Date(ultimo.fecha + 'T00:00:00');
+                                        const fecha = dIni.getMonth() === dFin.getMonth()
+                                            ? `${pad(dIni.getDate())}-${pad(dFin.getDate())}/${pad(dFin.getMonth() + 1)}`
+                                            : `${pad(dIni.getDate())}/${pad(dIni.getMonth() + 1)}-${pad(dFin.getDate())}/${pad(dFin.getMonth() + 1)}`;
+                                        return { key: `sem-${i}`, fecha, liquido: ultimo.total, variacion, pct };
+                                    }).reverse();
+
+                                    // TODOS los meses registrados (más reciente primero)
+                                    const filasMensuales = historialMensual.map((h, i) => {
+                                        const anterior = historialMensual[i - 1];
+                                        const variacion = anterior ? h.total - anterior.total : 0;
+                                        const pct = anterior && anterior.total !== 0 ? (variacion / anterior.total) * 100 : 0;
+                                        return { key: h.mes, fecha: fmtMes(h.mes), liquido: h.total, variacion, pct, esPrimero: !anterior };
+                                    }).reverse();
+
+                                    const Tabla = ({ filas, vacio }) => (
+                                        filas.length === 0 ? (
+                                            <p className="empty" style={{ fontSize: 'var(--fs-sm)' }}>{vacio}</p>
+                                        ) : (
+                                            <div style={{ overflowX: 'auto', maxHeight: '260px', overflowY: 'auto' }}>
+                                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--fs-sm)' }}>
+                                                    <thead>
+                                                        <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                                                            <th style={{ textAlign: 'left', padding: '0.5rem 0.25rem', color: 'var(--muted)', fontWeight: '600', fontSize: 'var(--fs-xs)', position: 'sticky', top: 0, background: 'var(--surface)' }}>Fecha</th>
+                                                            <th style={{ textAlign: 'right', padding: '0.5rem 0.25rem', color: 'var(--muted)', fontWeight: '600', fontSize: 'var(--fs-xs)', position: 'sticky', top: 0, background: 'var(--surface)' }}>Líquido</th>
+                                                            <th style={{ textAlign: 'right', padding: '0.5rem 0.25rem', color: 'var(--muted)', fontWeight: '600', fontSize: 'var(--fs-xs)', position: 'sticky', top: 0, background: 'var(--surface)' }}>Variación</th>
+                                                            <th style={{ textAlign: 'right', padding: '0.5rem 0.25rem', color: 'var(--muted)', fontWeight: '600', fontSize: 'var(--fs-xs)', position: 'sticky', top: 0, background: 'var(--surface)' }}>%</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {filas.map((r) => (
+                                                            <tr key={r.key} style={{ borderBottom: '1px solid var(--surface)' }}>
+                                                                <td style={{ padding: '0.55rem 0.25rem', fontWeight: '700' }}>{r.fecha}</td>
+                                                                <td style={{ padding: '0.55rem 0.25rem', textAlign: 'right', fontWeight: '600' }}>{formatCurrency(r.liquido)}</td>
+                                                                <td style={{ padding: '0.55rem 0.25rem', textAlign: 'right', fontWeight: '700', color: r.esPrimero ? 'var(--muted)' : (r.variacion >= 0 ? 'var(--success)' : 'var(--danger)') }}>
+                                                                    {r.esPrimero ? '—' : `${r.variacion >= 0 ? '+' : ''}${formatCurrency(r.variacion)}`}
+                                                                </td>
+                                                                <td style={{ padding: '0.55rem 0.25rem', textAlign: 'right', fontWeight: '600', color: r.esPrimero ? 'var(--muted)' : (r.variacion >= 0 ? 'var(--success)' : 'var(--danger)') }}>
+                                                                    {r.esPrimero ? '—' : `${r.pct >= 0 ? '+' : ''}${r.pct.toFixed(1)}%`}
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        )
+                                    );
+
+                                    return (
+                                        <div>
+                                            <h3 style={{ fontSize: 'var(--fs-xs)', color: 'var(--muted)', marginBottom: '0.5rem' }}>Diario ({filasDiarias.length} días)</h3>
+                                            <Tabla filas={filasDiarias} vacio="Aún no hay días registrados" />
+
+                                            <h3 style={{ fontSize: 'var(--fs-xs)', color: 'var(--muted)', margin: '1.25rem 0 0.5rem' }}>Semanal ({filasSemanales.length} semanas)</h3>
+                                            <Tabla filas={filasSemanales} vacio="Aún no hay semanas completas registradas" />
+
+                                            <h3 style={{ fontSize: 'var(--fs-xs)', color: 'var(--muted)', margin: '1.25rem 0 0.5rem' }}>Mensual ({filasMensuales.length} meses)</h3>
+                                            <Tabla filas={filasMensuales} vacio="Aún no hay meses registrados" />
+                                        </div>
+                                    );
+                                })()}
                             </div>
 
                             {/* SECCIÓN LÍQUIDO + TOTAL - COMPACTA */}
@@ -1996,120 +2156,6 @@
                                 </div>
                             </div>
 
-                            {/* ANÁLISIS DE CATEGORÍAS */}
-                            <div className="card">
-                                {(() => {
-                                    const gastosPorCategoria = {};
-                                    const hoyDate = new Date();
-                                    const mesActual = hoyDate.getFullYear() + '-' + String(hoyDate.getMonth() + 1).padStart(2, '0');
-
-                                    gastosOrdenados.forEach(g => {
-                                        const gastoMes = g.fecha.slice(0, 7);
-                                        if (gastoMes === mesActual) {
-                                            const cat = g.categoria || 'Sin categoría';
-                                            gastosPorCategoria[cat] = (gastosPorCategoria[cat] || 0) + Number(g.monto);
-                                        }
-                                    });
-
-                                    const totalGastosCategorizados = Object.values(gastosPorCategoria).reduce((a, b) => a + b, 0);
-
-                                    // Promedios mensuales de los últimos 12 meses, por categoría
-                                    const gastosUltimos12Meses = [];
-                                    for (let i = 0; i < 12; i++) {
-                                        const fecha = new Date(hoyDate.getFullYear(), hoyDate.getMonth() - i, 1);
-                                        const mes = fecha.getFullYear() + '-' + String(fecha.getMonth() + 1).padStart(2, '0');
-                                        gastosUltimos12Meses.push(mes);
-                                    }
-                                    const promedios = {};
-                                    categoriasGastos.forEach(cat => {
-                                        const totalCat = gastosOrdenados.filter(g => (g.categoria || 'Sin categoría') === cat && gastosUltimos12Meses.includes(g.fecha.slice(0, 7))).reduce((a, b) => a + Number(b.monto), 0);
-                                        promedios[cat] = Math.round(totalCat / 12);
-                                    });
-
-                                    // TODAS las categorías, incluidas las de $0 este mes — ordenadas por gasto de este mes
-                                    const todasLasCategorias = [...categoriasGastos].sort((a, b) => (gastosPorCategoria[b] || 0) - (gastosPorCategoria[a] || 0));
-                                    const colores = { 'Mercado': 'var(--success)', 'Transporte': 'var(--info)', 'Ocio': 'var(--purple)', 'Servicios': 'var(--expense)', 'Salidas Familia': 'var(--cyan)', 'Hogar': 'var(--warning)', 'Comida': '#ec4899', 'Regalos': '#14b8a6', 'Otros': 'var(--muted-2)', 'Sin categoría': 'var(--muted-2)' };
-
-                                    return (
-                                        <div>
-                                            {todasLasCategorias.map((cat) => {
-                                                const monto = gastosPorCategoria[cat] || 0;
-                                                const porcentaje = totalGastosCategorizados > 0 ? (monto / totalGastosCategorizados) * 100 : 0;
-                                                return (
-                                                    <div key={cat} style={{ marginBottom: '1rem' }}>
-                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '0.5rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
-                                                            <span style={{ fontSize: 'var(--fs-sm)', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cat}</span>
-                                                            <span style={{ fontSize: 'var(--fs-2xs)', color: 'var(--muted)', flexShrink: 0 }}>Prom. mensual: <strong style={{ color: 'var(--text)' }}>{formatCurrency(promedios[cat] || 0)}</strong></span>
-                                                        </div>
-                                                        <div style={{ position: 'relative', height: '26px', background: 'rgba(100,116,139,0.2)', borderRadius: '6px', overflow: 'hidden' }}>
-                                                            <div style={{ position: 'absolute', top: 0, left: 0, height: '100%', background: colores[cat] || 'var(--muted-2)', width: `${porcentaje}%`, transition: 'width 0.3s' }}></div>
-                                                            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', fontSize: 'var(--fs-2xs)', fontWeight: '700', color: '#fff', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>
-                                                                <span>{formatCurrency(monto)}</span>
-                                                                <span style={{ opacity: 0.85 }}>· {porcentaje.toFixed(1)}%</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    );
-                                })()}
-                            </div>
-
-                            <div className="card">
-                                {(() => {
-                                    const hoyD = hoyDateObj;
-                                    const inicioSemana = new Date(hoyD);
-                                    inicioSemana.setDate(hoyD.getDate() - 6);
-                                    const pad = (n) => String(n).padStart(2, '0');
-                                    const fechaDiaria = `${pad(hoyD.getDate())}/${pad(hoyD.getMonth() + 1)}`;
-                                    const fechaSemanal = (inicioSemana.getMonth() === hoyD.getMonth())
-                                        ? `${pad(inicioSemana.getDate())}-${pad(hoyD.getDate())}/${pad(hoyD.getMonth() + 1)}`
-                                        : `${pad(inicioSemana.getDate())}/${pad(inicioSemana.getMonth() + 1)}-${pad(hoyD.getDate())}/${pad(hoyD.getMonth() + 1)}`;
-                                    const fechaMensual = hoyD.toLocaleDateString('en-US', { month: 'short' });
-
-                                    const filas = [
-                                        { tipo: 'Diario', fecha: fechaDiaria, liquido: totalSeccion1, variacion: netoHoy },
-                                        { tipo: 'Semanal', fecha: fechaSemanal, liquido: totalSeccion1, variacion: netoSemana },
-                                        { tipo: 'Mensual', fecha: fechaMensual, liquido: totalSeccion1, variacion: netoMes },
-                                    ];
-
-                                    return (
-                                        <div style={{ overflowX: 'auto' }}>
-                                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--fs-sm)' }}>
-                                                <thead>
-                                                    <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                                                        <th style={{ textAlign: 'left', padding: '0.5rem 0.25rem', color: 'var(--muted)', fontWeight: '600', fontSize: 'var(--fs-xs)' }}>Fecha</th>
-                                                        <th style={{ textAlign: 'right', padding: '0.5rem 0.25rem', color: 'var(--muted)', fontWeight: '600', fontSize: 'var(--fs-xs)' }}>Líquido</th>
-                                                        <th style={{ textAlign: 'right', padding: '0.5rem 0.25rem', color: 'var(--muted)', fontWeight: '600', fontSize: 'var(--fs-xs)' }}>Variación</th>
-                                                        <th style={{ textAlign: 'right', padding: '0.5rem 0.25rem', color: 'var(--muted)', fontWeight: '600', fontSize: 'var(--fs-xs)' }}>%</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {filas.map((r) => {
-                                                        const pct = r.liquido !== 0 ? (r.variacion / r.liquido) * 100 : 0;
-                                                        return (
-                                                            <tr key={r.tipo} style={{ borderBottom: '1px solid var(--surface)' }}>
-                                                                <td style={{ padding: '0.65rem 0.25rem' }}>
-                                                                    <div style={{ fontWeight: '700' }}>{r.fecha}</div>
-                                                                    <div style={{ fontSize: 'var(--fs-2xs)', color: 'var(--muted-2)' }}>{r.tipo}</div>
-                                                                </td>
-                                                                <td style={{ padding: '0.65rem 0.25rem', textAlign: 'right', fontWeight: '600' }}>{formatCurrency(r.liquido)}</td>
-                                                                <td style={{ padding: '0.65rem 0.25rem', textAlign: 'right', fontWeight: '700', color: r.variacion >= 0 ? 'var(--success)' : 'var(--danger)' }}>
-                                                                    {r.variacion >= 0 ? '+' : ''}{formatCurrency(r.variacion)}
-                                                                </td>
-                                                                <td style={{ padding: '0.65rem 0.25rem', textAlign: 'right', fontWeight: '600', color: r.variacion >= 0 ? 'var(--success)' : 'var(--danger)' }}>
-                                                                    {pct >= 0 ? '+' : ''}{pct.toFixed(1)}%
-                                                                </td>
-                                                            </tr>
-                                                        );
-                                                    })}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    );
-                                })()}
-                            </div>
 
                             {cdtsOrdenados.some(c => Math.ceil((new Date(c.fechaVencimiento) - new Date()) / 86400000) <= 7) && (
                                 <div className="card" style={{ borderColor: 'var(--expense)' }}>
