@@ -330,6 +330,22 @@
 
         .mini-stat.compact {
             padding: 0.6rem 0.5rem;
+            min-height: 76px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .mini-stat.compact input {
+            margin: 0.25rem 0 0 !important;
+            width: 100%;
+            height: 30px;
+            box-sizing: border-box;
+            padding: 0.25rem 0.5rem;
+            font-size: var(--fs-sm);
+            line-height: 1;
+            text-align: center;
         }
 
         .mini-stat.compact p {
@@ -782,6 +798,84 @@
 
             .header h1 {
                 font-size: var(--fs-xl);
+            }
+
+            /* Ajuste de espaciado para pantallas pequeñas: unifica padding,
+               controles y textos sin alterar la separación entre FPyC y Otros. */
+            .card {
+                padding: 1rem;
+                border-radius: 0.65rem;
+            }
+
+            .section-title-row {
+                margin-bottom: 0.85rem;
+                gap: 0.5rem;
+            }
+
+            .card h2,
+            .update-section h3 {
+                font-size: var(--fs-base);
+            }
+
+            .update-section {
+                margin-bottom: 2rem;
+            }
+
+            .input-grid {
+                gap: 0.75rem;
+            }
+
+            label.field-label {
+                margin-bottom: 0.4rem;
+                font-size: var(--fs-sm);
+            }
+
+            input, select {
+                padding: 0.65rem 0.75rem;
+                font-size: var(--fs-base);
+                border-radius: 0.5rem;
+                box-sizing: border-box;
+            }
+
+            button {
+                padding: 0.65rem 1rem;
+                border-radius: 0.5rem;
+            }
+
+            .grid-compact {
+                gap: 0.5rem;
+            }
+
+            .mini-stat.compact {
+                padding: 0.55rem 0.5rem;
+                min-height: 76px;
+                border-radius: 0.6rem;
+            }
+
+            .mini-stat.compact input {
+                height: 30px;
+                font-size: var(--fs-sm);
+            }
+
+            .item-list {
+                max-height: 480px;
+            }
+
+            .item-row {
+                padding: 0.75rem;
+                margin-bottom: 0.65rem;
+                gap: 0.75rem;
+                border-radius: 0.6rem;
+            }
+
+            .empty {
+                padding: 1.25rem 0.75rem;
+            }
+
+            .update-section .hint {
+                margin-top: 0.65rem !important;
+                margin-bottom: 0.25rem;
+                line-height: 1.35;
             }
         }
     </style>
@@ -1667,8 +1761,11 @@
 
             const formatDate = (date) => {
                 if (!date) return '—';
-                const [year, month, day] = date.split('-');
-                return new Date(year, month - 1, day).toLocaleDateString('es-CO');
+                // Admite fechas simples (YYYY-MM-DD) y fechas ISO con hora.
+                const fecha = String(date).slice(0, 10);
+                const [year, month, day] = fecha.split('-');
+                if (!year || !month || !day) return '—';
+                return new Date(Number(year), Number(month) - 1, Number(day)).toLocaleDateString('es-CO');
             };
 
             const calcularVencimientoTC = (diaCorte, diasGracia) => {
@@ -2351,7 +2448,10 @@
                     {tab === 'fondos' && (
                         <div>
                             <div className="card update-section">
-                                <h3>Actualiza</h3>
+                                <div className="section-title-row" style={{ marginBottom: '1rem' }}>
+                                    <h3 style={{ marginBottom: 0 }}>FPyC</h3>
+                                    <button onClick={handleSaveFondos} title="Actualiza" aria-label="Actualiza" style={{ width: '40px', height: '40px', padding: 0, fontSize: '1.25rem', lineHeight: 1, fontWeight: '600', borderRadius: '0.65rem', background: 'var(--success)', color: '#fff', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ display: 'block', lineHeight: 1, transform: 'translateY(-1px)' }}>↻</span></button>
+                                </div>
                                 <div className="input-grid">
                                     <div>
                                         <label className="field-label">FPV</label>
@@ -2366,13 +2466,12 @@
                                         <input type="number" value={fondos.cesantias} onChange={(e) => setFondos({ ...fondos, cesantias: Number(e.target.value) })} />
                                     </div>
                                     <div>
-                                        <label className="field-label">Total (informativo)</label>
+                                        <label className="field-label">Total</label>
                                         <div style={{ padding: '0.75rem 1rem', borderRadius: '0.5rem', background: 'var(--surface)', border: '1px dashed var(--border-2)', color: 'var(--success)', fontWeight: '700', opacity: 0.85, cursor: 'not-allowed' }}>
                                             {formatCurrency(Number(fondos.fpv || 0) + Number(fondos.pensionObligatoria || 0) + Number(fondos.cesantias || 0))}
                                         </div>
                                     </div>
                                 </div>
-                                <button style={{ marginTop: '1rem' }} onClick={handleSaveFondos}>Guardar</button>
                                 <p className="hint" style={{ marginTop: '0.75rem' }}>
                                     {fondosFecha ? `FPV/Pensión/Cesantías actualizado: ${formatDate(fondosFecha)}` : 'Aún no has guardado una actualización mensual'}
                                 </p>
@@ -2380,13 +2479,8 @@
 
                             <div className="card">
                                 <div className="section-title-row">
-                                    <h2>Otros Activos</h2>
-                                    <button onClick={() => { setShowOtroModal(true); setEditingOtroId(null); setOtroForm(emptyOtroForm); }} style={{ padding: '0.85rem 1.5rem', fontSize: 'var(--fs-base)', fontWeight: '600', borderRadius: '0.75rem', background: 'var(--success)', color: '#fff', border: 'none', cursor: 'pointer' }}>+ Añadir Activo</button>
-                                </div>
-
-                                <div className="update-section" style={{ marginBottom: '1.5rem', maxWidth: '360px' }}>
-                                    <label className="field-label">TRM del día (COP por 1 USD)</label>
-                                    <input type="number" placeholder="Ej: 4050" value={trm} onChange={(e) => setTrm(e.target.value)} />
+                                    <h2>Otros</h2>
+                                    <button onClick={() => { setShowOtroModal(true); setEditingOtroId(null); setOtroForm(emptyOtroForm); }} title="Añadir" aria-label="Añadir" style={{ width: '40px', height: '40px', padding: 0, fontSize: '1.5rem', fontWeight: '500', borderRadius: '0.65rem', background: 'var(--success)', color: '#fff', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
                                 </div>
 
                                 {Object.keys(totalesOtrosPorMoneda).length > 0 && (
@@ -2397,6 +2491,10 @@
                                                 <div className="value">{formatCurrency(total, moneda)}</div>
                                             </div>
                                         ))}
+                                        <div className="mini-stat compact">
+                                            <p>TRM</p>
+                                            <input type="number" placeholder="Ej: 4050" value={trm} onChange={(e) => setTrm(e.target.value)} style={{ marginTop: '0.35rem', width: '100%' }} />
+                                        </div>
                                         <div className="mini-stat compact">
                                             <p>Total (COP)</p>
                                             <div className="value" style={{ color: 'var(--success)' }}>{formatCurrency(totalOtrosEnCOP)}</div>
@@ -2409,26 +2507,27 @@
                                 ) : (
                                     <div className="item-list">
                                         {otrosActivos.map((o) => (
-                                            <div key={o.id} className="item-row">
-                                                <div className="item-header">
-                                                    <div>
-                                                        <div className="item-name">{o.nombre}</div>
-                                                        <div className="item-meta">
-                                                            {o.tipo} • {o.moneda}
-                                                            {o.tieneRentabilidad && o.tasa ? ` • ${o.tasa}% EA` : ''}
-                                                            {o.vencimiento ? ` • vence ${formatDate(o.vencimiento)}` : ''}
-                                                        </div>
+                                            <div key={o.id} className="item-row" style={{ position: 'relative', padding: '0.55rem 0.75rem', display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(105px, auto) 35px', alignItems: 'center', columnGap: '0.75rem', minHeight: '64px' }}>
+                                                <div style={{ minWidth: 0 }}>
+                                                    <div className="item-name" style={{ marginBottom: '0.1rem', lineHeight: 1.15, fontSize: 'var(--fs-base)', fontWeight: '700' }}>{o.nombre}</div>
+                                                    <div className="item-meta" style={{ fontSize: 'var(--fs-sm)', lineHeight: 1.2 }}>
+                                                        {o.tipo} • {o.moneda}
+                                                        {o.tieneRentabilidad && o.tasa ? ` • ${o.tasa}% EA` : ''}
+                                                        {o.vencimiento ? ` • vence ${formatDate(o.vencimiento)}` : ''}
                                                     </div>
                                                 </div>
-                                                <div className="item-data">
-                                                    <div className="item-data-item">
-                                                        <p>Monto</p>
-                                                        <div className="value primary">{formatCurrency(Number(o.monto), o.moneda)}</div>
-                                                    </div>
+                                                <div style={{ textAlign: 'right', minWidth: '105px', paddingLeft: '0.25rem' }}>
+                                                    <div className="value primary" style={{ fontSize: 'var(--fs-md)', lineHeight: 1.1, whiteSpace: 'nowrap', fontWeight: '700' }}>{formatCurrency(Number(o.monto), o.moneda)}</div>
                                                 </div>
-                                                <div className="button-group">
-                                                    <button onClick={() => handleEditOtro(o)} style={{ flex: 1 }}>Editar</button>
-                                                    <button onClick={() => handleDeleteOtro(o.id)} className="danger" style={{ flex: 1 }}>Eliminar</button>
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    <button onClick={() => {
+                                                        const menu = document.getElementById(`menu-otro-${o.id}`);
+                                                        menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
+                                                    }} style={{ width: '35px', padding: '0.15rem', background: 'transparent', border: 'none', color: 'var(--muted)', cursor: 'pointer', fontSize: 'var(--fs-base)' }}>⋮</button>
+                                                    <div id={`menu-otro-${o.id}`} style={{ display: 'none', position: 'absolute', flexDirection: 'column', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '0.5rem', zIndex: 10, minWidth: '110px', top: '2.2rem', right: '0.4rem' }}>
+                                                        <button onClick={() => { handleEditOtro(o); document.getElementById(`menu-otro-${o.id}`).style.display = 'none'; }} style={{ textAlign: 'left', padding: '0.4rem 0.8rem', border: 'none', background: 'transparent', color: 'var(--text)', borderRadius: '0.5rem 0.5rem 0 0', cursor: 'pointer', fontSize: 'var(--fs-sm)' }}>Editar</button>
+                                                        <button onClick={() => { handleDeleteOtro(o.id); document.getElementById(`menu-otro-${o.id}`).style.display = 'none'; }} style={{ textAlign: 'left', padding: '0.4rem 0.8rem', border: 'none', background: 'transparent', color: 'var(--danger)', borderRadius: '0 0 0.5rem 0.5rem', cursor: 'pointer', fontSize: 'var(--fs-sm)' }}>Eliminar</button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         ))}
