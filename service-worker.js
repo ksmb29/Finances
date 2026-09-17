@@ -1,4 +1,4 @@
-const CACHE_NAME = 'inversiones-cache-v18';
+const CACHE_NAME = 'inversiones-cache-v23';
 const URLS_TO_CACHE = [
   './',
   './index.html',
