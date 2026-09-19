@@ -1842,9 +1842,11 @@
                 [...cdts].sort((a, b) => new Date(a.fechaVencimiento) - new Date(b.fechaVencimiento)),
                 [cdts]);
 
-            const formatCurrency = (num, moneda = 'COP') => {
+            const formatCurrency = (num, moneda = 'COP', conSigno = false) => {
                 if (hideAmounts) return '••••••';
-                return new Intl.NumberFormat('es-CO', { style: 'currency', currency: moneda, minimumFractionDigits: 0 }).format(num || 0);
+                const formateado = new Intl.NumberFormat('es-CO', { style: 'currency', currency: moneda, minimumFractionDigits: 0 }).format(num || 0);
+                if (conSigno && Number(num || 0) > 0) return `+${formateado}`;
+                return formateado;
             };
 
             const formatDate = (date) => {
@@ -2073,7 +2075,7 @@
                                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--fs-2xs)', paddingTop: '0.25rem', borderTop: '1px solid var(--border)' }}>
                                                 <span style={{ color: 'var(--muted)' }}>Vs. mes anterior</span>
                                                 <span style={{ color: variacionMensual && variacionMensual.diferenciaLiquido >= 0 ? 'var(--success)' : 'var(--danger)', fontWeight: '600' }}>
-                                                    {variacionMensual ? `${variacionMensual.diferenciaLiquido >= 0 ? '+' : ''}${formatCurrency(variacionMensual.diferenciaLiquido)} (${variacionMensual.porcentajeLiquido >= 0 ? '+' : ''}${variacionMensual.porcentajeLiquido.toFixed(1)}%)` : 'N/A'}
+                                                    {variacionMensual ? `${formatCurrency(variacionMensual.diferenciaLiquido, 'COP', true)} (${variacionMensual.porcentajeLiquido >= 0 ? '+' : ''}${variacionMensual.porcentajeLiquido.toFixed(1)}%)` : 'N/A'}
                                                 </span>
                                             </div>
                                         </div>
@@ -2091,16 +2093,8 @@
                                                 <span style={{ color: 'var(--info)', fontWeight: '600' }}>{formatCurrency(totalSeccion1)}</span>
                                             </div>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                                                <span style={{ color: 'var(--muted)' }}>FPV</span>
-                                                <span style={{ color: 'var(--expense)', fontWeight: '600' }}>{formatCurrency(fondos.fpv)}</span>
-                                            </div>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                                                <span style={{ color: 'var(--muted)' }}>FPO</span>
-                                                <span style={{ color: 'var(--purple)', fontWeight: '600' }}>{formatCurrency(fondos.pensionObligatoria)}</span>
-                                            </div>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                                                <span style={{ color: 'var(--muted)' }}>Cesantías</span>
-                                                <span style={{ color: 'var(--purple)', fontWeight: '600' }}>{formatCurrency(fondos.cesantias)}</span>
+                                                <span style={{ color: 'var(--muted)' }}>FPyC</span>
+                                                <span style={{ color: 'var(--purple)', fontWeight: '600' }}>{formatCurrency(Number(fondos.fpv || 0) + Number(fondos.pensionObligatoria || 0) + Number(fondos.cesantias || 0))}</span>
                                             </div>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
                                                 <span style={{ color: 'var(--muted)' }}>Otros</span>
@@ -2113,7 +2107,7 @@
                                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--fs-2xs)', paddingTop: '0.25rem', borderTop: '1px solid var(--border)' }}>
                                                 <span style={{ color: 'var(--muted)' }}>Vs. mes anterior</span>
                                                 <span style={{ color: variacionMensual && variacionMensual.diferenciaTotal >= 0 ? 'var(--success)' : 'var(--danger)', fontWeight: '600' }}>
-                                                    {variacionMensual ? `${variacionMensual.diferenciaTotal >= 0 ? '+' : ''}${formatCurrency(variacionMensual.diferenciaTotal)} (${variacionMensual.porcentajeTotal >= 0 ? '+' : ''}${variacionMensual.porcentajeTotal.toFixed(1)}%)` : 'N/A'}
+                                                    {variacionMensual ? `${formatCurrency(variacionMensual.diferenciaTotal, 'COP', true)} (${variacionMensual.porcentajeTotal >= 0 ? '+' : ''}${variacionMensual.porcentajeTotal.toFixed(1)}%)` : 'N/A'}
                                                 </span>
                                             </div>
                                         </div>
@@ -2123,9 +2117,15 @@
 
                             {/* BUSCAR GASTO / RECIENTES — PRIMERA SECCIÓN */}
                             <div className="card" style={{ marginBottom: '1rem' }}>
-                                <input type="text" placeholder="🔍 Buscar gasto..." value={searchGasto}
-                                    onChange={(e) => setSearchGasto(e.target.value)}
-                                    style={{ width: '100%', padding: '0.7rem', marginBottom: '1rem', background: 'var(--surface)', color: 'var(--text)', border: '1px solid var(--border-2)', borderRadius: '0.75rem', fontSize: 'var(--fs-sm)' }} />
+                                <div style={{ position: 'relative', marginBottom: '1rem' }}>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                    </svg>
+                                    <input type="text" placeholder="Buscar" value={searchGasto}
+                                        onChange={(e) => setSearchGasto(e.target.value)}
+                                        style={{ width: '100%', padding: '0.7rem 0.7rem 0.7rem 2.5rem', background: 'var(--surface)', color: 'var(--text)', border: '1px solid var(--border-2)', borderRadius: '0.75rem', fontSize: 'var(--fs-sm)' }} />
+                                </div>
                                 {gastosOrdenados.length === 0 ? (
                                     <div className="empty" style={{ fontSize: 'var(--fs-sm)' }}>Sin gastos aún</div>
                                 ) : (
@@ -2141,7 +2141,7 @@
                                                     </div>
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', marginLeft: '0.75rem', flexShrink: 0 }}>
-                                                    <span style={{ fontSize: 'var(--fs-sm)', fontWeight: '700', color: 'var(--expense)', minWidth: '70px', textAlign: 'right' }}>
+                                                    <span style={{ fontSize: 'var(--fs-sm)', fontWeight: '700', color: 'var(--info)', minWidth: '70px', textAlign: 'right' }}>
                                                         {formatCurrency(Number(g.monto))}
                                                     </span>
                                                     <button onClick={() => {
@@ -2308,13 +2308,13 @@
                                                             <tr key={r.key} style={{ borderBottom: '1px solid var(--surface)' }}>
                                                                 <td style={{ padding: '0.55rem 0.25rem', fontWeight: '700' }}>{r.fecha}</td>
                                                                 <td style={{ padding: '0.55rem 0.25rem', textAlign: 'right', fontWeight: '600', color: 'var(--danger)' }}>
-                                                                    {r.gastos > 0 ? `-${formatCurrency(r.gastos)}` : formatCurrency(0)}
+                                                                    {formatCurrency(-r.gastos)}
                                                                 </td>
                                                                 <td style={{ padding: '0.55rem 0.25rem', textAlign: 'right', fontWeight: '600', color: 'var(--success)' }}>
-                                                                    +{formatCurrency(r.rentabilidad)}
+                                                                    {formatCurrency(r.rentabilidad, 'COP', true)}
                                                                 </td>
                                                                 <td style={{ padding: '0.55rem 0.25rem', textAlign: 'right', fontWeight: '700', color: r.total >= 0 ? 'var(--success)' : 'var(--danger)' }}>
-                                                                    {r.total >= 0 ? '+' : ''}{formatCurrency(r.total)}
+                                                                    {formatCurrency(r.total, 'COP', true)}
                                                                 </td>
                                                             </tr>
                                                         ))}
@@ -2743,29 +2743,37 @@
                                                     {d.aplicaCashback && d.cashbackMonto ? (
                                                         <div className="item-data-item">
                                                             <p>Cashback Obtenido</p>
-                                                            <div className="value" style={{ color: 'var(--success)' }}>+{formatCurrency(d.cashbackMonto)}</div>
+                                                            <div className="value" style={{ color: 'var(--success)' }}>{formatCurrency(d.cashbackMonto, 'COP', true)}</div>
                                                         </div>
                                                     ) : null}
                                                     {cashbackGanado > 0 ? (
                                                         <div className="item-data-item">
                                                             <p>Cashback ({cashbackPctAsociado}%)</p>
-                                                            <div className="value" style={{ color: 'var(--success)' }}>+{formatCurrency(cashbackGanado)}</div>
+                                                            <div className="value" style={{ color: 'var(--success)' }}>{formatCurrency(cashbackGanado, 'COP', true)}</div>
                                                         </div>
                                                     ) : null}
                                                 </div>
                                                 {d.cuotasTotales > 1 && (
-                                                    <div className="smart-move-box">
-                                                        <div className="smart-move-title">💡 Ganancia por pagar en cuotas (vs. de contado)</div>
-                                                        {ganancia ? (
-                                                            <>
-                                                                <div className="smart-move-amount">+{formatCurrency(ganancia.ganancia)}</div>
-                                                                <div className="smart-move-detail">
-                                                                    Invirtiendo {formatCurrency(ganancia.montoRetenido)} durante {ganancia.mesesAprovechados} mes(es) a {tasaPromedioPonderada.toFixed(2)}% E.A. (tasa promedio de tus CDTs/cuentas)
-                                                                </div>
-                                                            </>
-                                                        ) : (
-                                                            <div className="smart-move-detail">Registra una tasa en tus CDTs o cuentas para calcular esta ganancia.</div>
-                                                        )}
+                                                    <div style={{ position: 'relative' }}>
+                                                        <button onClick={() => {
+                                                            const el = document.getElementById(`smart-move-${d.id}`);
+                                                            el.style.display = el.style.display === 'none' ? 'block' : 'none';
+                                                        }} title="Ganancia por pagar en cuotas" aria-label="Ver ganancia por pagar en cuotas" style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem', padding: '0.25rem 0', lineHeight: 1, display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--muted)' }}>
+                                                            💡 <span style={{ fontSize: 'var(--fs-xs)' }}>Ganancia por cuotas</span>
+                                                        </button>
+                                                        <div id={`smart-move-${d.id}`} className="smart-move-box" style={{ display: 'none' }}>
+                                                            <div className="smart-move-title">Ganancia por pagar en cuotas (vs. de contado)</div>
+                                                            {ganancia ? (
+                                                                <>
+                                                                    <div className="smart-move-amount">{formatCurrency(ganancia.ganancia, 'COP', true)}</div>
+                                                                    <div className="smart-move-detail">
+                                                                        Invirtiendo {formatCurrency(ganancia.montoRetenido)} durante {ganancia.mesesAprovechados} mes(es) a {tasaPromedioPonderada.toFixed(2)}% E.A. (tasa promedio de tus CDTs/cuentas)
+                                                                    </div>
+                                                                </>
+                                                            ) : (
+                                                                <div className="smart-move-detail">Registra una tasa en tus CDTs o cuentas para calcular esta ganancia.</div>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 )}
                                             </div>
